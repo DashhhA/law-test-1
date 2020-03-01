@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">LawTest</string>
+
+    <!-- Log In -->
+    <string name="login_title">Log in</string>
+    <string name="login_log_in">enter account</string>
+    <string name="new_acc">create new account</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="remember_me">remember me</string>
+    <string name="create_acc">Create account</string>
+    <string name="new_user_name_error">Invalid name</string>
+    <string name="new_user_email_error">Invalid email</string>
+    <string name="new_user_password_error">Password must be longer then 5 characters</string>
+    <string name="new_user_empty_error">Must not be empty</string>
+    <string name="menu_reg_specialist"> Create new specialist account</string>
+    <string name="menu_reg_user">Create new user account</string>
+</resources>
