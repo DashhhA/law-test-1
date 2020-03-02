@@ -27,4 +27,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
+
+    compile 'com.isseiaoki:simplecropview:1.1.8'
 }

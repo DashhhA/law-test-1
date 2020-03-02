@@ -15,4 +15,10 @@
     <string name="new_user_empty_error">Must not be empty</string>
     <string name="menu_reg_specialist"> Create new specialist account</string>
     <string name="menu_reg_user">Create new user account</string>
+
+    <!-- new user -->
+    <string name="hint_fname">Name</string>
+    <string name="hint_sname">Second name</string>
+    <string name="hint_surname">Surname</string>
+    <string name="new_user_title">New user</string>
 </resources>

@@ -5,6 +5,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,7 +16,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.lawtest.MainActivity;
 import com.lawtest.R;
+import com.lawtest.ui.new_user.NewUserActivity;
 
 public class LogInActivity extends AppCompatActivity {
 
@@ -43,25 +46,10 @@ public class LogInActivity extends AppCompatActivity {
         create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // формирование всплывающего меню с типом создаваемого аккаунта
-                PopupMenu popupMenu = new PopupMenu(LogInActivity.this, v);
-                popupMenu.inflate(R.menu.menu_role);
-
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.menu_reg_specialist:
-                                hideKeyboard(LogInActivity.this);
-                                finish();
-                                return true;
-                            default:
-                                return false;
-                        }
-                    }
-                });
-
-                popupMenu.show();
+                hideKeyboard(LogInActivity.this);
+                Intent intent = new Intent(MainActivity.getInstance(), NewUserActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }
