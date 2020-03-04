@@ -16,6 +16,8 @@ import com.isseiaoki.simplecropview.callback.LoadCallback;
 import com.lawtest.R;
 import com.lawtest.util.utils;
 
+import java.util.UUID;
+
 public class CropActivity extends AppCompatActivity {
 
     private SpinnerProgress progress;
@@ -37,10 +39,11 @@ public class CropActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Bitmap cropped) {
                         Bitmap scaled = Bitmap.createScaledBitmap(cropped, 256, 256, true);
+                        UUID imgId = UUID.randomUUID();
                         Uri saved = utils.saveToInternalStorage(
                                 getApplicationContext(),
                                 scaled,
-                                "ava_cropped.png"); // TODO: store filename in static variable
+                                imgId.toString() + utils.AVATAR_FORMAT);
                         Intent intent = new Intent();
                         intent.setData(saved);
                         setResult(RESULT_OK, intent);

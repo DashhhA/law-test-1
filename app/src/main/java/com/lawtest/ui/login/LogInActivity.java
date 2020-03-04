@@ -2,6 +2,7 @@ package com.lawtest.ui.login;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.app.Activity;
@@ -18,7 +19,10 @@ import android.widget.EditText;
 
 import com.lawtest.MainActivity;
 import com.lawtest.R;
+import com.lawtest.model.User;
+import com.lawtest.model.UserRepository;
 import com.lawtest.ui.new_user.NewUserActivity;
+import com.lawtest.ui.user.UserActivity;
 
 public class LogInActivity extends AppCompatActivity {
 
@@ -31,7 +35,7 @@ public class LogInActivity extends AppCompatActivity {
 
         // получение ссылок на элементы пользовательского интерфейса
         EditText email = findViewById(R.id.loginEmail);
-        EditText password = findViewById(R.id.loginPassword);
+        final EditText password = findViewById(R.id.loginPassword);
         Button submit = findViewById(R.id.loginSubmit);
         new ContentModel(email, password, submit);
 
@@ -52,6 +56,26 @@ public class LogInActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        // кнопка входа в аккаунт
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UserRepository repository;
+                repository = MainActivity.getInstance().getUserRepository();
+                repository.getUser(viewModel.getEmail(), password.getText().toString())
+                        .observe(LogInActivity.this, new Observer<User>() {
+                            @Override
+                            public void onChanged(User user) {
+                                if (user != null) {
+                                    Intent intent = new Intent(MainActivity.getInstance(), UserActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            }
+                        });
+            }
+        });
     }
 
     // класс, контролирующий введенные данные (длина пароля должна быть не меньше 5 символов и почта
@@ -64,7 +88,7 @@ public class LogInActivity extends AppCompatActivity {
         private TextWatcher emailWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                viewModel.setEmail(s.toString());
+
             }
 
             @Override
@@ -77,6 +101,7 @@ public class LogInActivity extends AppCompatActivity {
                 emailValid = isEmailValid(s.toString());
                 updateEnable();
                 updateErrors();
+                viewModel.setEmail(s.toString());
             }
         };
 

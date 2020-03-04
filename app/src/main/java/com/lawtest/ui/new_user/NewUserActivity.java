@@ -17,8 +17,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.lawtest.MainActivity;
 import com.lawtest.R;
+import com.lawtest.model.User;
 import com.lawtest.ui.base.CropActivity;
+import com.lawtest.util.crypto;
 
 public class NewUserActivity extends AppCompatActivity {
 
@@ -83,6 +86,24 @@ public class NewUserActivity extends AppCompatActivity {
 
         // set model to control if an input is valid
         new ContentModel(fName, surName, email, password, submit);
+
+        // обработка нажатия на кнопку создания аккаунта
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                User user = new User(
+                        viewModel.getfName(),
+                        viewModel.getsName(),
+                        viewModel.getSurName(),
+                        viewModel.getEmail(),
+                        crypto.getPassSalt(password.getText().toString()),
+                        viewModel.getImgUri(),
+                        viewModel.getAvatarUri(),
+                        viewModel.isRemember()
+                );
+                MainActivity.getInstance().getUserRepository().saveUser(user);
+            }
+        });
     }
 
     @Override
