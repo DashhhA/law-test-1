@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 
 public class utils {
     public static String IMG_DIR = "img_dir";
@@ -108,5 +109,37 @@ public class utils {
             }
         }
         return object;
+    }
+
+    public static ArrayList<Integer> bytesToArray(byte[] bytes){
+        ArrayList<Integer> list = new ArrayList<>();
+        for (byte b : bytes) {
+            list.add((int)b);
+        }
+        return list;
+    }
+
+    public static byte[] arrayToBytes(ArrayList<Integer> list) {
+        byte[] bytes = new byte[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            bytes[i] = (byte) (int) list.get(i);
+        }
+        return bytes;
+    }
+
+    public static byte[] arrayToBytesL(ArrayList<Long> list) {
+        byte[] bytes = new byte[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            bytes[i] = (byte) (int) (long) list.get(i);
+        }
+        return bytes;
+    }
+
+    public static String emailForDatabase(String email){
+        return email.replaceAll("\\.", "_dot_");
+    }
+
+    public static String emailFromDatabase(String email){
+        return email.replaceAll("_dot_", "\\.");
     }
 }

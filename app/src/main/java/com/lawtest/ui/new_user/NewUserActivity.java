@@ -101,7 +101,7 @@ public class NewUserActivity extends AppCompatActivity {
                         viewModel.getAvatarUri(),
                         viewModel.isRemember()
                 );
-                MainActivity.getInstance().getUserRepository().saveUser(user);
+                MainActivity.getInstance().getUserRepository().newUser(user,null); // TODO
             }
         });
     }

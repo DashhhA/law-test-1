@@ -8,21 +8,35 @@ import androidx.annotation.Nullable;
 
 import com.lawtest.MainActivity;
 import com.lawtest.util.crypto;
+import com.lawtest.util.utils;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class User {
     final static String TAG = "user";
+    final static String DATABASE_TAG = "users";
+    final static String DATABASE_AVA_FOLDER = "ava_imgs";
     String fName;
     String sName;
     String surName;
     String email;
-    crypto.PassSalt passSalt;
+    byte[] salt;
+    byte[] pass;
     private String imgUri;
     private String avatarUri;
     boolean isRemember = true;
+    long V;
+
+    public User() {
+        // Default constructor required for calls to DataSnapshot.getValue(User.class)
+    }
 
     public User(
             String fName,
@@ -38,18 +52,22 @@ public class User {
         this.sName = sName;
         this.surName = surName;
         this.email = email;
-        this.passSalt = passSalt;
+        this.salt = passSalt.salt;
+        this.pass = passSalt.pass;
         if (imgUri != null) this.imgUri = imgUri.toString();
         if (avatarUri != null) this.avatarUri = avatarUri.toString();
         this.isRemember = isRemember;
+        V = 0;
     }
 
     public Uri getImgUri() {
-        return Uri.parse(imgUri);
+        if (imgUri != null) return Uri.parse(imgUri);
+        return null;
     }
 
     public Uri getAvatarUri() {
-        return Uri.parse(avatarUri);
+        if (avatarUri != null) return Uri.parse(avatarUri);
+        return null;
     }
 
     public void setImgUri(Uri imgUri) {
@@ -58,5 +76,30 @@ public class User {
 
     public void setAvatarUri(Uri avatarUri) {
         if (avatarUri != null) this.avatarUri = avatarUri.toString(); else this.avatarUri = null;
+    }
+
+    Map toMap(){
+        Map<String, Object> map = new HashMap<>();
+        map.put("fName", fName);
+        map.put("sName", sName);
+        map.put("surName", surName);
+        map.put("imgUri", imgUri);
+        map.put("avatarUri", avatarUri);
+        map.put("salt", utils.bytesToArray(salt));
+        map.put("pass", utils.bytesToArray(pass));
+        map.put("V", V);
+
+        return map;
+    }
+
+    User(Map<String, Object> map){
+        fName = (String) map.get("fName");
+        sName = (String) map.get("sName");
+        surName = (String) map.get("surName");
+        imgUri = (String) map.get("imgUri");
+        avatarUri = (String) map.get("avatarUri");
+        salt = utils.arrayToBytesL((ArrayList<Long>) map.get("salt"));
+        pass = utils.arrayToBytesL((ArrayList<Long>) map.get("pass"));
+        V = (long) map.get("V");
     }
 }

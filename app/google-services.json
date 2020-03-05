@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "931799781877",
+    "firebase_url": "https://law-test-72ae3.firebaseio.com",
+    "project_id": "law-test-72ae3",
+    "storage_bucket": "law-test-72ae3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:931799781877:android:8eb36778bf885a04b6d0bc",
+        "android_client_info": {
+          "package_name": "com.lawtest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "931799781877-7tpe6m6rd66th2qsv4d1rl6u944pucvd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lawtest",
+            "certificate_hash": "f967503ba78a289f6202c30ad1fc2b7a880c4f04"
+          }
+        },
+        {
+          "client_id": "931799781877-gokf4i493vgmbbrn8al90h6j725etvhh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBD-l4riKtkSbyAY76LjLmsOYSEQrpg5Mo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "931799781877-gokf4i493vgmbbrn8al90h6j725etvhh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
