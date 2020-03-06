@@ -10,6 +10,8 @@ import com.google.gson.Gson;
 import com.lawtest.MainActivity;
 import com.lawtest.model.User;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -44,6 +46,32 @@ public class utils {
         }
 
         return Uri.parse(filePath.toString());
+    }
+
+    // сохранение с помощю uri
+    public static boolean saveFromContent(Uri dest, Uri source, Context context){
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
+
+        try {
+            bis = new BufferedInputStream(context.getContentResolver().openInputStream(source));
+            bos = new BufferedOutputStream(new FileOutputStream(dest.getPath()));
+            byte[] buf = new byte[1024];
+            while (bis.read(buf) != -1){
+                bos.write(buf);
+            }
+            return true;
+        } catch (Exception e){
+            //TODO:handle exception
+            return false;
+        } finally {
+            try {
+                if (bis != null) bis.close();
+                if (bos != null) bos.close();
+            } catch (Exception e){
+                //TODO: handle exception
+            }
+        }
     }
 
     // сохранение объекта в shared preferences с помощью gson

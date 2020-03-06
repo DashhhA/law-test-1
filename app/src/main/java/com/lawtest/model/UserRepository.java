@@ -112,6 +112,9 @@ public class UserRepository {
                                 f.delete();
                         }
                     }
+
+                    // достаточно добавить здесь, так как репозиторрии синхронизируются
+                    notifyUserChanged(user);
                 }
             }).start();
         }
@@ -127,38 +130,8 @@ public class UserRepository {
                     ArrayList<Integer> list = dataSnapshot.getValue(typeIndicator);
                     salt = utils.arrayToBytes(list);
 
-                    auth.signInWithEmailAndPassword(email, crypto.getPassBySalt(pass, salt)).addOnCompleteListener(
-                            new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        String user_uid = auth.getCurrentUser().getUid();
-
-                                        ValueEventListener userEventListener = new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                GenericTypeIndicator<Map<String, Object> > typeIndicator = new GenericTypeIndicator<Map<String, Object> >() {};
-                                                Map<String, Object> map = dataSnapshot.getValue(typeIndicator);
-                                                User user = new User(map);
-                                                listener.onChange(user);
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                                listener.onChange(null);
-                                            }
-                                        };
-
-                                        database
-                                                .child(User.DATABASE_TAG)
-                                                .child(user_uid)
-                                                .addListenerForSingleValueEvent(userEventListener);
-                                    } else {
-                                        listener.onChange(null);
-                                    }
-                                }
-                            }
-                    );
+                    auth.signInWithEmailAndPassword(email, crypto.getPassBySalt(pass, salt))
+                            .addOnCompleteListener( new GetSignedInUserImpl(listener));
                 }
 
                 @Override
@@ -188,6 +161,66 @@ public class UserRepository {
                 .addOnCompleteListener(
                         new PutUserOnLogInImpl(user, taskState)
                 );
+        }
+
+        class GetSignedInUserImpl implements OnCompleteListener<AuthResult>{
+            private OnChangeListener listener;
+            private User user;
+
+            GetSignedInUserImpl(final OnChangeListener listener){
+                this.listener = listener;
+            }
+
+            private OnCompleteListener<Uri> avatarListener= new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri tmp = task.getResult();
+                        Context context = MainActivity.getInstance();
+                        utils.saveFromContent(user.getAvatarUri(), tmp, context);
+                        listener.onChange(user);
+                    } else {
+                        listener.onChange(null);
+                    }
+                }
+            };
+
+            private ValueEventListener userEventListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    GenericTypeIndicator<Map<String, Object> > typeIndicator =
+                            new GenericTypeIndicator<Map<String, Object> >() {};
+                    Map<String, Object> map = dataSnapshot.getValue(typeIndicator);
+                    user = new User(map);
+                    if (user != null && user.getAvatarUri() != null) {
+                        storage.child(User.DATABASE_AVA_FOLDER)
+                                .getDownloadUrl()
+                                .addOnCompleteListener(avatarListener);
+                    } else {
+                        listener.onChange(user);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    listener.onChange(null);
+                }
+            };
+
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+
+                    String user_uid = auth.getCurrentUser().getUid();
+                    database
+                            .child(User.DATABASE_TAG)
+                            .child(user_uid)
+                            .addListenerForSingleValueEvent(userEventListener);
+
+                } else {
+                    listener.onChange(null);
+                }
+            }
         }
     };
 
@@ -346,7 +379,65 @@ public class UserRepository {
     // синхронизация пользователей в локальной и удаленной бд
     public void fetchUser(@Nullable StateListener stateListener){
         TaskState state = new TaskState(stateListener);
-        // TODO
+        // скорее всего не нужно, так как синхронизация происходит по коллбакам от сервера
+    }
+
+    // синхронизация с удаленной бд
+    public void addChangeListenersToRemoteElements(final User user) {
+        OnCompleteListener<AuthResult> onAuthorised = new OnCompleteListener<AuthResult>() {
+
+            private OnCompleteListener<Uri> avatarListener= new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri tmp = task.getResult();
+                        Context context = MainActivity.getInstance();
+                        utils.saveFromContent(user.getAvatarUri(), tmp, context);
+                        localService.saveUser(user, null); // TODO ? task callback
+                    } else {
+                        // TODO
+                    }
+                }
+            };
+
+            private ValueEventListener userEventListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    GenericTypeIndicator<Map<String, Object> > typeIndicator =
+                            new GenericTypeIndicator<Map<String, Object> >() {};
+                    Map<String, Object> map = dataSnapshot.getValue(typeIndicator);
+                    localUser = new User(map);
+                    localService.saveUser(localUser, null); // TODO ? task callback
+                    User user_tmp = new User(map);
+                    if (user_tmp.getAvatarUri() != user.getAvatarUri()) {
+                        storage.child(User.DATABASE_AVA_FOLDER)
+                                .getDownloadUrl()
+                                .addOnCompleteListener(avatarListener);
+                    } else {
+                        saveUser(user_tmp, null); // TODO ? task callback
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // TODO
+                }
+            };
+
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    String user_uid = auth.getCurrentUser().getUid();
+                    database
+                            .child(User.DATABASE_TAG)
+                            .child(user_uid)
+                            .addValueEventListener(userEventListener);
+                }
+            }
+        };
+        String pass = new String(user.pass);
+        auth.signInWithEmailAndPassword(user.email, pass)
+                .addOnCompleteListener(onAuthorised);
     }
 
     private void receiveData(final String email, final String pass) {
@@ -363,6 +454,7 @@ public class UserRepository {
                         @Override
                         public void onChange(User user) {
                             data.postValue(user);
+                            localService.saveUser(user, null); // TODO ? task callback
                         }
                     });
                 }
