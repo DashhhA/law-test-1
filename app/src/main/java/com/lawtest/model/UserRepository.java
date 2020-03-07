@@ -47,7 +47,7 @@ public class UserRepository {
         void newUser(User user, TaskState taskState);
     }
 
-    interface OnChangeListener {
+    public interface OnChangeListener {
         void onChange(User user);
     }
 
@@ -171,13 +171,11 @@ public class UserRepository {
                 this.listener = listener;
             }
 
-            private OnCompleteListener<Uri> avatarListener= new OnCompleteListener<Uri>() {
+            private OnCompleteListener<byte []> avatarListener = new OnCompleteListener<byte[]>() {
                 @Override
-                public void onComplete(@NonNull Task<Uri> task) {
+                public void onComplete(@NonNull Task<byte[]> task) {
                     if (task.isSuccessful()) {
-                        Uri tmp = task.getResult();
-                        Context context = MainActivity.getInstance();
-                        utils.saveFromContent(user.getAvatarUri(), tmp, context);
+                        utils.saveBytesToFile(user.getAvatarUri(), task.getResult());
                         listener.onChange(user);
                     } else {
                         listener.onChange(null);
@@ -194,7 +192,8 @@ public class UserRepository {
                     user = new User(map);
                     if (user != null && user.getAvatarUri() != null) {
                         storage.child(User.DATABASE_AVA_FOLDER)
-                                .getDownloadUrl()
+                                .child(user.getAvatarUri().getLastPathSegment())
+                                .getBytes(utils.MAX_DOWNLOAD_BYTES)
                                 .addOnCompleteListener(avatarListener);
                     } else {
                         listener.onChange(user);
@@ -386,13 +385,11 @@ public class UserRepository {
     public void addChangeListenersToRemoteElements(final User user) {
         OnCompleteListener<AuthResult> onAuthorised = new OnCompleteListener<AuthResult>() {
 
-            private OnCompleteListener<Uri> avatarListener= new OnCompleteListener<Uri>() {
+            private OnCompleteListener<byte []> avatarListener = new OnCompleteListener<byte[]>() {
                 @Override
-                public void onComplete(@NonNull Task<Uri> task) {
+                public void onComplete(@NonNull Task<byte[]> task) {
                     if (task.isSuccessful()) {
-                        Uri tmp = task.getResult();
-                        Context context = MainActivity.getInstance();
-                        utils.saveFromContent(user.getAvatarUri(), tmp, context);
+                        utils.saveBytesToFile(user.getAvatarUri(), task.getResult());
                         localService.saveUser(user, null); // TODO ? task callback
                     } else {
                         // TODO
@@ -411,7 +408,7 @@ public class UserRepository {
                     User user_tmp = new User(map);
                     if (user_tmp.getAvatarUri() != user.getAvatarUri()) {
                         storage.child(User.DATABASE_AVA_FOLDER)
-                                .getDownloadUrl()
+                                .getBytes(utils.MAX_DOWNLOAD_BYTES)
                                 .addOnCompleteListener(avatarListener);
                     } else {
                         saveUser(user_tmp, null); // TODO ? task callback
@@ -440,6 +437,8 @@ public class UserRepository {
                 .addOnCompleteListener(onAuthorised);
     }
 
+    public User getLocalUser() { return localUser; }
+
     private void receiveData(final String email, final String pass) {
         new Thread(new Runnable() {
             @Override
@@ -453,8 +452,9 @@ public class UserRepository {
                     webService.getUser(email, pass, new OnChangeListener() {
                         @Override
                         public void onChange(User user) {
+                            localUser = user;
                             data.postValue(user);
-                            localService.saveUser(user, null); // TODO ? task callback
+                            if (user != null) localService.saveUser(user, null); // TODO ? task callback
                         }
                     });
                 }

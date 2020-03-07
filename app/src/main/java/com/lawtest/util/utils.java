@@ -14,6 +14,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 public class utils {
     public static String IMG_DIR = "img_dir";
     public static String AVATAR_FORMAT = ".vtr";
+    public static final long MAX_DOWNLOAD_BYTES = 30 * 1024 * 1024;
 
     // сохранение bitmap в локальную директорию приложения
     public static Uri saveToInternalStorage(Context context, Bitmap bitmapImage, String name){
@@ -48,29 +50,26 @@ public class utils {
         return Uri.parse(filePath.toString());
     }
 
-    // сохранение с помощю uri
-    public static boolean saveFromContent(Uri dest, Uri source, Context context){
-        BufferedInputStream bis = null;
-        BufferedOutputStream bos = null;
+    public static void saveBytesToFile(Uri dest, byte[] source) {
+
+        String path = dest.getPath();
+        File filePath = new File(path);
+
+        FileOutputStream fos = null;
 
         try {
-            bis = new BufferedInputStream(context.getContentResolver().openInputStream(source));
-            bos = new BufferedOutputStream(new FileOutputStream(dest.getPath()));
-            byte[] buf = new byte[1024];
-            while (bis.read(buf) != -1){
-                bos.write(buf);
-            }
-            return true;
-        } catch (Exception e){
-            //TODO:handle exception
-            return false;
+            fos = new FileOutputStream(filePath, false);
+            fos.write(source);
+        } catch (FileNotFoundException e) {
+            new String();
+            // TODO
+        } catch (IOException e) {
+            new String();
+            // TODO
         } finally {
             try {
-                if (bis != null) bis.close();
-                if (bos != null) bos.close();
-            } catch (Exception e){
-                //TODO: handle exception
-            }
+                fos.close();
+            } catch (Exception e) { }
         }
     }
 

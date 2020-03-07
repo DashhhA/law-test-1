@@ -36,4 +36,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:19.2.0'
     implementation 'com.google.firebase:firebase-database:19.2.1'
     implementation 'com.google.firebase:firebase-storage:19.1.1'
+    implementation 'androidx.navigation:navigation-fragment:2.3.0-alpha03'
+    implementation 'androidx.navigation:navigation-ui:2.3.0-alpha03'
+    implementation 'androidx.drawerlayout:drawerlayout:1.0.0'
 }

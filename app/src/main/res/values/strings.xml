@@ -21,4 +21,12 @@
     <string name="hint_sname">Second name</string>
     <string name="hint_surname">Surname</string>
     <string name="new_user_title">New user</string>
+
+    <!-- user -->
+    <string name="menu_home">Home</string>
+    <string name="menu_info">App information</string>
+    <string name="menu_specialists">Specialists</string>
+    <string name="menu_home_title">Your account information</string>
+    <string name="menu_info_title">App information</string>
+    <string name="menu_specialists_title">List of specialists</string>
 </resources>

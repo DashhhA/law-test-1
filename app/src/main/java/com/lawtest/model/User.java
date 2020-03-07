@@ -23,10 +23,10 @@ public class User {
     final static String TAG = "user";
     final static String DATABASE_TAG = "users";
     final static String DATABASE_AVA_FOLDER = "ava_imgs";
-    String fName;
-    String sName;
-    String surName;
-    String email;
+    public String fName;
+    public String sName;
+    public String surName;
+    public String email;
     byte[] salt;
     byte[] pass;
     private String imgUri;
@@ -83,6 +83,7 @@ public class User {
         map.put("fName", fName);
         map.put("sName", sName);
         map.put("surName", surName);
+        map.put("email", email);
         map.put("imgUri", imgUri);
         map.put("avatarUri", avatarUri);
         map.put("salt", utils.bytesToArray(salt));
@@ -96,6 +97,7 @@ public class User {
         fName = (String) map.get("fName");
         sName = (String) map.get("sName");
         surName = (String) map.get("surName");
+        email = (String) map.get("email");
         imgUri = (String) map.get("imgUri");
         avatarUri = (String) map.get("avatarUri");
         salt = utils.arrayToBytesL((ArrayList<Long>) map.get("salt"));
