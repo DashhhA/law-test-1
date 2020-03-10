@@ -1,51 +1,47 @@
-package com.lawtest.ui.new_user;
+package com.lawtest.ui.admin.new_specialist;
 
-import android.content.Intent;
-import android.net.Uri;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Patterns;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.lawtest.MainActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.lawtest.R;
-import com.lawtest.model.User;
-import com.lawtest.ui.base.CropActivity;
+import com.lawtest.model.AgencyService;
+import com.lawtest.model.Specialist;
+import com.lawtest.model.UserRepository;
+import com.lawtest.ui.base.MAlertDialog;
+import com.lawtest.util.MultiTaskCompleteWatcher;
 import com.lawtest.util.crypto;
+import com.lawtest.util.utils;
 
-public class NewUserActivity extends AppCompatActivity {
+import java.util.ArrayList;
 
-    public static final int PICK_IMAGE = 1;
-    public static final int CROP_IMAGE = 2;
-    private ImageView userAva;
-    private NewUserViewModel viewModel;
-    // обработчик нажатия на изображение, стартующий активити для выбора изобрадения из галереи
-    private View.OnClickListener select_img_lstnr = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
-            getIntent.setType("image/*");
+public class NewSpecialistActivity extends AppCompatActivity {
 
-            Intent pickIntent = new Intent(Intent.ACTION_PICK);
-            pickIntent.setDataAndType(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-
-            Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
-            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {pickIntent});
-
-            startActivityForResult(pickIntent, PICK_IMAGE);
-        }
-    };
-
+    private NewSpecialistViewModel viewModel;
+    private ProgressDialog dialog;
     private TextWatcher sNameTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -64,27 +60,33 @@ public class NewUserActivity extends AppCompatActivity {
     };
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_user);
+        setContentView(R.layout.activity_new_specialist);
 
-        // устанавливается обработчик нажатия для "аватарки"
-        userAva = findViewById(R.id.usr_default_icon);
-        userAva.setOnClickListener(select_img_lstnr);
+        dialog = new ProgressDialog(this);
+        dialog.setMessage(getString(R.string.new_specialist_registering));
+
+        // настройк toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar_new_specialist);
+        setSupportActionBar(toolbar);
+        ActionBar ab = getSupportActionBar();
+        ab.setDisplayShowTitleEnabled(false);
+        ab.setDisplayHomeAsUpEnabled(true);
 
         // получение ссылок на элементы пользовательского интерфейса
-        Button submit = findViewById(R.id.createButton);
-        final EditText fName = findViewById(R.id.newUsrFstName);
-        final EditText sName = findViewById(R.id.newUsrSndName);
-        final EditText surName = findViewById(R.id.newUsrSurname);
-        final EditText email = findViewById(R.id.newUsrEmail);
-        final EditText password = findViewById(R.id.newUsrPassword);
-        final CheckBox autologin = findViewById(R.id.autologin);
+        Button submit = findViewById(R.id.newSpecSubmit);
+        final EditText fName = findViewById(R.id.newSpecFstName);
+        final EditText sName = findViewById(R.id.newSpecSndName);
+        final EditText surName = findViewById(R.id.newSpecSurname);
+        final EditText email = findViewById(R.id.newSpecEmail);
+        final EditText password = findViewById(R.id.newSpecPassword);
+        final Spinner spinner = findViewById(R.id.newSpecSpinner);
         sName.addTextChangedListener(sNameTextWatcher);
 
         // получение ViewModel и заполнение полей пользовательского интерфейса в соответствии
         // с сохраненными данными.
-        viewModel = ViewModelProviders.of(this).get(NewUserViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(NewSpecialistViewModel.class);
         String s = viewModel.getfName();
         if (s != null) fName.setText(s);
         s = viewModel.getsName();
@@ -93,60 +95,114 @@ public class NewUserActivity extends AppCompatActivity {
         if (s != null) surName.setText(s);
         s = viewModel.getEmail();
         if (s != null) email.setText(s);
-        autologin.setChecked(viewModel.isRemember());
-        autologin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+        final ServicesArrayAdapter arrayAdapter = new ServicesArrayAdapter(this, 0);
+        spinner.setAdapter(arrayAdapter);
+        spinner.setEnabled(!arrayAdapter.isEmpty());
+        viewModel.getService().observe(this, new Observer<ArrayList<AgencyService>>() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                viewModel.setRemember(isChecked);
+            public void onChanged(ArrayList<AgencyService> agencyServices) {
+                arrayAdapter.clear();
+                for (AgencyService service: agencyServices) {
+                    arrayAdapter.add(service);
+                }
+                arrayAdapter.notifyDataSetChanged();
+                spinner.setEnabled(!arrayAdapter.isEmpty());
             }
         });
-        Uri ava_uri = viewModel.getAvatarUri();
-        if (ava_uri != null) userAva.setImageURI(ava_uri);
 
-        // set model to control if an input is valid
         new ContentModel(fName, surName, email, password, submit);
 
-        // обработка нажатия на кнопку создания аккаунта
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                User user = new User(
+                dialog.show();
+
+                ArrayList<String> services_ids = new ArrayList<>();
+                for (AgencyService service: arrayAdapter.getSelected()) {
+                    services_ids.add(service.id);
+                }
+
+                final Specialist specialist = new Specialist(
                         viewModel.getfName(),
                         viewModel.getsName(),
                         viewModel.getSurName(),
                         viewModel.getEmail(),
+                        services_ids,
                         crypto.getPassSalt(password.getText().toString()),
-                        viewModel.getImgUri(),
-                        viewModel.getAvatarUri(),
-                        viewModel.isRemember()
+                        null
                 );
-                MainActivity.getInstance().getUserRepository().newUser(user,null); // TODO
+
+                final DatabaseReference database = viewModel.getDatabase();
+
+                MultiTaskCompleteWatcher taskCompleteWatcher = new MultiTaskCompleteWatcher() {
+                    @Override
+                    public void allComplete() {
+                        dialog.dismiss();
+                        finish();
+                    }
+
+                    @Override
+                    public void onTaskFailed(Task task, Exception exception) {
+                        MAlertDialog dialog = new MAlertDialog(NewSpecialistActivity.this,
+                                "Error:" + exception.getMessage());
+                        dialog.dismiss();
+                    }
+                };
+
+                final MultiTaskCompleteWatcher.Task databaseTask = taskCompleteWatcher.newTask();
+                final MultiTaskCompleteWatcher.Task saltTask = taskCompleteWatcher.newTask();
+                final MultiTaskCompleteWatcher.Task authTask = taskCompleteWatcher.newTask();
+
+                OnCompleteListener<AuthResult> authListener = new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            database.child(Specialist.DATABASE_TAG)
+                                    .child(task.getResult().getUser().getUid())
+                                    .setValue(specialist.toMap())
+                                    .addOnCompleteListener(
+                                            new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful())databaseTask.complete();
+                                                    else databaseTask.fail(task.getException());
+                                                }
+                                            });
+                            authTask.complete();
+                        }else {
+                            authTask.fail(task.getException());
+                        }
+                    }
+                };
+
+                database.child(UserRepository.EMAIL_TO_SALT_TAG)
+                        .child(utils.emailForDatabase(viewModel.getEmail()))
+                        .setValue(utils.bytesToArray(specialist.salt))
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) saltTask.complete();
+                                else saltTask.fail(task.getException());
+                            }
+                        });
+
+                FirebaseAuth auth = viewModel.getAuth();
+                auth.createUserWithEmailAndPassword(specialist.email, new String(specialist.pass))
+                .addOnCompleteListener(authListener);
             }
         });
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
 
-        // если результат получен из активити, выбирающего изображение из галереи, вызывается
-        // активити для обрезки изображений
-        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && data != null) {
-            Uri imgUri = data.getData();
-            viewModel.setImgUri(imgUri);
-
-            Intent intent = new Intent(this, CropActivity.class);
-            intent.setData(imgUri);
-            startActivityForResult(intent, CROP_IMAGE);
-        }
-
-        // обновляем изображение "аватарки" по выполнении активити "обрезающего" изображение
-        if (requestCode == CROP_IMAGE && resultCode == RESULT_OK){
-            Uri avatarUri = data.getData();
-            viewModel.setAvatarUri(avatarUri);
-            userAva.setImageURI(null);
-            userAva.setImageURI(avatarUri);
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

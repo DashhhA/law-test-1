@@ -29,4 +29,15 @@
     <string name="menu_home_title">Your account information</string>
     <string name="menu_info_title">App information</string>
     <string name="menu_specialists_title">List of specialists</string>
+
+    <!-- admin -->
+    <string name="admin_title">Admin panel</string>
+    <string name="admin_specialists_title">specialists</string>
+    <string name="admin_posts_title">comments</string>
+
+    <!-- new specialist -->
+    <string name="new_specialist_title">New specialist account</string>
+    <string name="new_specialist_services">Select services</string>
+    <string name="new_specialist_loading_services">loading</string>
+    <string name="new_specialist_registering">Registering account on server</string>
 </resources>

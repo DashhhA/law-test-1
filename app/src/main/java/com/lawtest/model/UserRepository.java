@@ -26,6 +26,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.lawtest.MainActivity;
+import com.lawtest.util.MultiTaskCompleteWatcher;
 import com.lawtest.util.crypto;
 import com.lawtest.util.utils;
 
@@ -59,7 +60,7 @@ public class UserRepository {
     private DatabaseReference database;
     private StorageReference storage;
 
-    private final static String EMAIL_TO_SALT_TAG = "emailToSalt";
+    public final static String EMAIL_TO_SALT_TAG = "emailToSalt";
 
     private UserLocalService localService = new UserLocalService() {
         @Override
@@ -228,8 +229,13 @@ public class UserRepository {
         private TaskState taskState;
         private MultiTaskCompleteWatcher taskCompleteWatcher = new MultiTaskCompleteWatcher() {
             @Override
-            void allComplete() {
+            public void allComplete() {
                 taskState.onCompleteWeb();
+            }
+
+            @Override
+            public void onTaskFailed(Task task, Exception exception) {
+
             }
         };
         private final MultiTaskCompleteWatcher.Task databaseTask = taskCompleteWatcher.newTask();
@@ -317,30 +323,6 @@ public class UserRepository {
         void onFailure(Exception exception){
             failed = true;
             if (stateListener != null) stateListener.onFailure(exception);
-        }
-    }
-
-    private abstract class MultiTaskCompleteWatcher{
-        private ArrayList<Task> tasks;
-        MultiTaskCompleteWatcher() {
-            tasks = new ArrayList<>();
-        }
-        Task newTask(){
-            Task task = new Task();
-            tasks.add(task);
-            return task;
-        }
-        abstract void allComplete();
-
-        class Task {
-            private boolean complete;
-            void complete() {
-                complete = true;
-                boolean allComplete = true;
-                for (Task task: tasks) allComplete = allComplete && task.isComplete();
-                if (allComplete) allComplete();
-            }
-            boolean isComplete() { return complete; }
         }
     }
 
