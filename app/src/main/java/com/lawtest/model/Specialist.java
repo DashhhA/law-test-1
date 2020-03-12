@@ -12,27 +12,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Specialist extends BasePerson {
+    public final static String TAG = "specialist";
     public final static String DATABASE_TAG = "specialists";
     public final static String DATABASE_AVA_FOLDER = "ava_imgs_s";
     public String fName;
     public String sName;
     public String surName;
-    public String email;
     private ArrayList<String> services;
-    public byte[] salt;
-    public byte[] pass;
-    private String avatarUri;
+
+    Specialist() {} //default constructor
 
     public Specialist(Map<String, Object> map) {
         super(map);
-        fName = (String) map.get("fName");
-        sName = (String) map.get("sName");
-        surName = (String) map.get("surName");
-        email = (String) map.get("email");
-        services = (ArrayList<String>) map.get("services");
-        avatarUri = (String) map.get("avatarUri");
-        salt = utils.arrayToBytesL((ArrayList<Long>) map.get("salt"));
-        pass = utils.arrayToBytesL((ArrayList<Long>) map.get("pass"));
+        fromMap(map);
     }
 
     public Specialist(
@@ -77,5 +69,17 @@ public class Specialist extends BasePerson {
         map.put("salt", utils.bytesToArray(salt));
         map.put("pass", utils.bytesToArray(pass));
         return map;
+    }
+
+    @Override
+    public void fromMap(Map<String, Object> map) {
+        fName = (String) map.get("fName");
+        sName = (String) map.get("sName");
+        surName = (String) map.get("surName");
+        email = (String) map.get("email");
+        services = (ArrayList<String>) map.get("services");
+        avatarUri = (String) map.get("avatarUri");
+        salt = utils.arrayToBytesL((ArrayList<Long>) map.get("salt"));
+        pass = utils.arrayToBytesL((ArrayList<Long>) map.get("pass"));
     }
 }

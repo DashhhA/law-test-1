@@ -83,11 +83,11 @@ public class utils {
     }
 
     // получение объекта из shared preferences с помощью gson
-    public static User getUserFromPrefs(String TAG){
+    public static <T> T getPersonFromPrefs(String TAG, Class<T> tClass){
         SharedPreferences preferences = MainActivity.getInstance().getPreferences(Context.MODE_PRIVATE);
         Gson gson = new Gson();
         String json = preferences.getString(TAG, null);
-        if (json != null) return gson.fromJson(json, User.class);
+        if (json != null) return gson.fromJson(json, tClass);
         return null;
     }
 

@@ -11,18 +11,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class User {
-    final static String TAG = "user";
-    final static String DATABASE_TAG = "users";
+public class User extends BasePerson{
+    public final static String TAG = "user";
+    public final static String DATABASE_TAG = "users";
     final static String DATABASE_AVA_FOLDER = "ava_imgs";
     public String fName;
     public String sName;
     public String surName;
-    public String email;
-    byte[] salt;
-    byte[] pass;
     private String imgUri;
-    private String avatarUri;
     boolean isRemember = true;
     long V;
 
@@ -70,7 +66,7 @@ public class User {
         if (avatarUri != null) this.avatarUri = avatarUri.toString(); else this.avatarUri = null;
     }
 
-    Map toMap(){
+    public Map toMap(){
         Map<String, Object> map = new HashMap<>();
         map.put("fName", fName);
         map.put("sName", sName);
@@ -86,6 +82,11 @@ public class User {
     }
 
     User(Map<String, Object> map){
+        fromMap(map);
+    }
+
+    @Override
+    public void fromMap(Map<String, Object> map) {
         fName = (String) map.get("fName");
         sName = (String) map.get("sName");
         surName = (String) map.get("surName");

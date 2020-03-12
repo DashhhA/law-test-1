@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import static com.lawtest.model.PersonRepository.EMAIL_TO_SALT_TAG;
+
 public class UserRepository {
 
     private interface UserLocalService {
@@ -60,8 +62,6 @@ public class UserRepository {
     private DatabaseReference database;
     private StorageReference storage;
 
-    public final static String EMAIL_TO_SALT_TAG = "emailToSalt";
-
     private UserLocalService localService = new UserLocalService() {
         @Override
         public User getUser(String email, String pass) {
@@ -75,7 +75,7 @@ public class UserRepository {
         }
 
         private User checkUser(String email, String pass){
-            User user = utils.getUserFromPrefs(User.TAG);
+            User user = utils.getPersonFromPrefs(User.TAG, User.class);
             if (
                     user != null &&
                     user.email.equals(email) &&
@@ -326,10 +326,10 @@ public class UserRepository {
         }
     }
 
-    public UserRepository(){
-        auth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance().getReference();
-        storage = FirebaseStorage.getInstance().getReference();
+    public UserRepository(FirebaseAuth auth, DatabaseReference database, StorageReference storage){
+        this.auth = auth;
+        this.database = database;
+        this.storage = storage;
         changeListeners = new ArrayList<>();
     }
 

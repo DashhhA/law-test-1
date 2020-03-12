@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/specialist_navigation"
+    app:startDestination="@id/nav_spec_home">
+
+    <fragment
+        android:id="@id/nav_spec_home"
+        android:name="com.lawtest.ui.user.home.HomeFragment"
+        android:label="@string/menu_home_title" />
+
+    <fragment
+        android:id="@id/nav_spec_info"
+        android:name="com.lawtest.ui.user.info.InfoFragment"
+        android:label="@string/menu_info_title"/>
+</navigation>

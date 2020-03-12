@@ -1,7 +1,7 @@
 package com.lawtest.ui.admin.new_specialist;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,7 +15,6 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
@@ -26,17 +25,18 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.lawtest.R;
 import com.lawtest.model.AgencyService;
 import com.lawtest.model.Specialist;
 import com.lawtest.model.UserRepository;
-import com.lawtest.ui.base.MAlertDialog;
+import com.lawtest.ui.login.LogInActivity;
 import com.lawtest.util.MultiTaskCompleteWatcher;
 import com.lawtest.util.crypto;
 import com.lawtest.util.utils;
 
 import java.util.ArrayList;
+
+import static com.lawtest.model.PersonRepository.EMAIL_TO_SALT_TAG;
 
 public class NewSpecialistActivity extends AppCompatActivity {
 
@@ -144,9 +144,13 @@ public class NewSpecialistActivity extends AppCompatActivity {
 
                     @Override
                     public void onTaskFailed(Task task, Exception exception) {
-                        MAlertDialog dialog = new MAlertDialog(NewSpecialistActivity.this,
-                                "Error:" + exception.getMessage());
                         dialog.dismiss();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(NewSpecialistActivity.this);
+                        builder.setTitle("Error");
+                        builder.setMessage(exception.getMessage());
+                        builder.setPositiveButton("Ok", null);
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
                     }
                 };
 
@@ -176,7 +180,7 @@ public class NewSpecialistActivity extends AppCompatActivity {
                     }
                 };
 
-                database.child(UserRepository.EMAIL_TO_SALT_TAG)
+                database.child(EMAIL_TO_SALT_TAG)
                         .child(utils.emailForDatabase(viewModel.getEmail()))
                         .setValue(utils.bytesToArray(specialist.salt))
                         .addOnCompleteListener(new OnCompleteListener<Void>() {

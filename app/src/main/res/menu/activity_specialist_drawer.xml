@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/spec_menu_top"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_spec_home"
+            android:icon="@drawable/round_home_black_48"
+            android:title="@string/menu_home" />
+    </group>
+    <group
+        android:id="@+id/spec_menu_bottom"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_spec_info"
+            android:icon="@drawable/round_info_black_48"
+            android:title="@string/menu_info" />
+    </group>
+</menu>

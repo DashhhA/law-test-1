@@ -1,17 +1,16 @@
 package com.lawtest.ui.login;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Patterns;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -19,10 +18,8 @@ import android.widget.EditText;
 
 import com.lawtest.MainActivity;
 import com.lawtest.R;
-import com.lawtest.model.User;
-import com.lawtest.model.UserRepository;
 import com.lawtest.ui.new_user.NewUserActivity;
-import com.lawtest.ui.user.UserActivity;
+import com.lawtest.ui.specialist.SpecialistActivity;
 
 public class LogInActivity extends AppCompatActivity {
 
@@ -61,19 +58,53 @@ public class LogInActivity extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UserRepository repository;
+                /*UserRepository repository;
                 repository = MainActivity.getInstance().getUserRepository();
                 repository.getUser(viewModel.getEmail(), password.getText().toString())
                         .observe(LogInActivity.this, new Observer<User>() {
                             @Override
                             public void onChanged(User user) {
                                 if (user != null) {
-                                    Intent intent = new Intent(MainActivity.getInstance(), UserActivity.class);
+                                    Intent intent = new Intent(LogInActivity.this, UserActivity.class);
                                     startActivity(intent);
                                     finish();
                                 }
                             }
-                        });
+                        });*/
+                final ProgressDialog progress = new ProgressDialog(LogInActivity.this);
+                progress.setMessage(getString(R.string.login_checking));
+                progress.show();
+                AuthIdentifier authIdentifier =
+                        new AuthIdentifier(viewModel.getEmail(), password.getText().toString());
+                authIdentifier.getLogInType(new AuthIdentifier.OnAnswer() {
+                    @Override
+                    public void onSuccess(int type) {
+                        progress.dismiss();
+                        switch (type) {
+                            case AuthIdentifier.USER:
+                                break;
+                            case AuthIdentifier.SPECIALIST:
+                                Intent intent = new Intent(LogInActivity.this, SpecialistActivity.class);
+                                intent.putExtra("passwd", password.getText().toString());
+                                intent.putExtra("email", viewModel.getEmail());
+                                startActivity(intent);
+                                break;
+                            case AuthIdentifier.ADMIN:
+                                break;
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        progress.dismiss();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(LogInActivity.this);
+                        builder.setTitle("Error");
+                        builder.setMessage(e.getMessage());
+                        builder.setPositiveButton("Ok", null);
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+                });
             }
         });
     }
