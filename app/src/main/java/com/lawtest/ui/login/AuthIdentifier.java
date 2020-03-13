@@ -124,8 +124,8 @@ public class AuthIdentifier {
     }
 
     AuthIdentifier(String email, String password) {
-        auth = MainActivity.getInstance().getAuth();
-        database = MainActivity.getInstance().getDatabase();
+        auth = MainActivity.getInstance().getViewModel().getAuth();
+        database = MainActivity.getInstance().getViewModel().getDatabase();
 
         this.email = email;
         this.password = password;
@@ -133,6 +133,7 @@ public class AuthIdentifier {
 
     public void getLogInType(final OnAnswer answer) {
 
+        /* небезопасно
         // проверка локального пользователя
         User user = utils.getPersonFromPrefs(User.TAG, User.class);
         if (checkPerson(user, email, password)) {
@@ -144,7 +145,7 @@ public class AuthIdentifier {
         if (checkPerson(specialist, email, password)) {
             answer.onSuccess(SPECIALIST);
             return;
-        }
+        }*/
         // проверка в удаленном репозитории
         database
                 .child(EMAIL_TO_SALT_TAG)

@@ -44,4 +44,6 @@
 
     <!-- specialist -->
     <string name="specialist_loading">Loading account data</string>
+    <string name="specialist_fetching">Fetching data with server</string>
+    <string name="specialist_about">About me</string>
 </resources>

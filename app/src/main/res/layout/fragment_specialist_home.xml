@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/specAvatarEditView"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:layout_margin="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_menu_home" />
+        <TableRow
+            android:paddingVertical="4dp">
+            <TextView
+                android:id="@+id/specName"
+                style="@style/MainTextStyle"
+                android:layout_weight="1"
+                android:paddingLeft="40dp"
+                android:gravity="center" />
+
+            <ImageButton
+                android:layout_height="match_parent"
+                android:paddingVertical="4dp"
+                android:layout_width="40dp"
+                android:paddingRight="16dp"
+                android:paddingEnd="16dp"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:background="?attr/selectableItemBackground"
+                android:src="@drawable/baseline_edit_black_24" />
+        </TableRow>
+        <TableRow
+            android:paddingVertical="4dp">
+            <TextView
+                android:id="@+id/specEmail"
+                android:layout_weight="1"
+                android:paddingLeft="40dp"
+                android:gravity="center"
+                style="@style/MainTextStyle" />
+            <ImageButton
+                android:id="@+id/specEditEmail"
+                android:layout_height="match_parent"
+                android:layout_width="40dp"
+                android:paddingRight="16dp"
+                android:paddingEnd="16dp"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:background="?attr/selectableItemBackground"
+                android:src="@drawable/baseline_edit_black_24" />
+        </TableRow>
+        <TableRow
+            android:paddingVertical="4dp"
+            android:gravity="center" >
+            <TextView
+                android:layout_gravity="center"
+                android:text="@string/specialist_about"
+                android:paddingLeft="40dp"
+                style="@style/MainTextStyle"
+                />
+            <ImageButton
+                android:id="@+id/specEditAbout"
+                android:layout_height="match_parent"
+                android:layout_width="40dp"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:background="?attr/selectableItemBackground"
+                android:src="@drawable/baseline_edit_black_24" />
+        </TableRow>
+        <TextView
+            android:id="@+id/specAbout"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="20dp" />
+    </TableLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

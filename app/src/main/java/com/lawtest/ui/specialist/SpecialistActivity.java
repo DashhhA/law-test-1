@@ -60,8 +60,7 @@ public class SpecialistActivity extends AppCompatActivity {
 
         // получение ViewModel и обновление элементов view по коллбакам
         viewModel = ViewModelProviders.of(this).get(SpecialistViewModel.class);
-        Intent intent = getIntent();
-        viewModel.getPerson(intent.getStringExtra("email"), intent.getStringExtra("passwd"))
+        viewModel.getPerson()
         .observe(this, new Observer<Specialist>() {
             @Override
             public void onChanged(Specialist specialist) {
@@ -74,7 +73,6 @@ public class SpecialistActivity extends AppCompatActivity {
                 else avaView.setImageResource(R.drawable.ic_user_default); // default image
             }
         });
-        intent = null;
     }
 
     @Override

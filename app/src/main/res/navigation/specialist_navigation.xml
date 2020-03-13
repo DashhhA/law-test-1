@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@id/nav_spec_home"
-        android:name="com.lawtest.ui.user.home.HomeFragment"
+        android:name="com.lawtest.ui.specialist.home.SpecialistHomeFragment"
         android:label="@string/menu_home_title" />
 
     <fragment

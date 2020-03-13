@@ -84,9 +84,9 @@ public class LogInActivity extends AppCompatActivity {
                             case AuthIdentifier.USER:
                                 break;
                             case AuthIdentifier.SPECIALIST:
+                                MainActivity.getInstance().getViewModel()
+                                        .authSpecialist(viewModel.getEmail(), password.getText().toString());
                                 Intent intent = new Intent(LogInActivity.this, SpecialistActivity.class);
-                                intent.putExtra("passwd", password.getText().toString());
-                                intent.putExtra("email", viewModel.getEmail());
                                 startActivity(intent);
                                 break;
                             case AuthIdentifier.ADMIN:

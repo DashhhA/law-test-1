@@ -14,14 +14,11 @@ import com.lawtest.R;
 
 public class HomeFragment extends Fragment {
 
-    private HomeViewModel viewModel;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        viewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_user_home, container, false);
 
         return root;
