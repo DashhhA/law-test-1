@@ -148,17 +148,40 @@ public class ShowSpecialistFragment extends Fragment {
                 datePicker(new mDateSetListener() {
                     @Override
                     public void onDateSet(Appointment.DateTime dateTime) {
-                        Appointment appointment = new Appointment();
+                        String servicesNames = "[";
+
+                        final Appointment appointment = new Appointment();
                         appointment.dateTime = dateTime;
                         appointment.status = Appointment.STATUS_SENT;
                         appointment.userId = MainActivity.getInstance().getViewModel().getAuth().getUid();
                         appointment.specialistId = specialist.getUid();
                         appointment.userComment = comment;
                         appointment.ServiceIds = new ArrayList<>();
-                        for (AgencyService service: services) appointment.ServiceIds.add(service.id);
+                        for (AgencyService service: services) {
+                            appointment.ServiceIds.add(service.id);
+                            servicesNames = servicesNames + service.name + ", ";
+                        }
+                        servicesNames = servicesNames.substring(0, servicesNames.length() -2) + "] ";
                         appointment.id = UUID.randomUUID().toString();
-                        progress.show();
-                        specialist.addAppointment(appointment, appointmentWatcher, ShowSpecialistFragment.this.getActivity());
+
+                        // окно подтверждения записи
+                        AlertDialog.Builder builder =
+                                new AlertDialog.Builder(ShowSpecialistFragment.this.getActivity());
+                        builder.setMessage(String.format(getString(R.string.appointment_confirm),
+                                specialist.fName, specialist.surName,
+                                servicesNames,
+                                appointment.dateTime.hour, appointment.dateTime.minute,
+                                appointment.dateTime.day, appointment.dateTime.month, appointment.dateTime.year
+                        ));
+                        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                progress.show();
+                                specialist.addAppointment(appointment, appointmentWatcher, ShowSpecialistFragment.this.getActivity());
+                            }
+                        });
+                        builder.setNegativeButton("Cancel", null);
+                        builder.create().show();
                     }
                 });
             }

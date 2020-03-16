@@ -39,6 +39,7 @@
     <string name="appointment_success">Appointment registered</string>
     <string name="appointment_comment_hint">Comment</string>
     <string name="appointment_warning">Please, select needed services</string>
+    <string name="appointment_confirm">You attempt to request an appointment with specialist %s %s for services %son %02d:%02d, %02d:%02d:%d</string>
 
     <!-- admin -->
     <string name="admin_title">Admin panel</string>
