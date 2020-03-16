@@ -74,7 +74,7 @@ public class PersonRepository<T extends BasePerson> {
         localService.getPerson(email, password, new OnPersonResolvedListener() {
             @Override
             public void onResolved(Object person) {
-                if (localPerson != null) {
+                if (person != null) {
                     localPerson = (T) person;
                     data.postValue(localPerson);
                 }
@@ -348,6 +348,7 @@ public class PersonRepository<T extends BasePerson> {
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
+
                                 if (task.isSuccessful()) databaseTask.complete();
                                 else saltTask.fail(task.getException());
                             }
@@ -409,6 +410,7 @@ public class PersonRepository<T extends BasePerson> {
                 Map<String, Object> map = dataSnapshot.getValue(typeIndicator);
                 boolean addAvaListener =
                         dataSnapshot.hasChild("avatarUri") &&
+                        localPerson != null &&
                         localPerson.avatarUri == null;
                 try {
                     localPerson = tClass.newInstance();

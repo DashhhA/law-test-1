@@ -14,12 +14,17 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.lawtest.R;
 import com.lawtest.model.SpecialistForList;
+import com.lawtest.ui.admin.AdminActivity;
+import com.lawtest.ui.base.TasksOnActivity;
+import com.lawtest.ui.base.task;
 
 import java.util.ArrayList;
 
 public class SpecialistsListFragment extends ListFragment {
 
     private SpecialistsListViewModel viewModel;
+    private AdminActivity activity;
+    private TasksOnActivity tasks = new TasksOnActivity();
 
     @Nullable
     @Override
@@ -27,6 +32,8 @@ public class SpecialistsListFragment extends ListFragment {
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         viewModel = ViewModelProviders.of(this).get(SpecialistsListViewModel.class);
+        activity = (AdminActivity) requireActivity();
+        tasks.applyTasks();
         View root = inflater.inflate(R.layout.fragment_admin_specialists, container, false);
 
         return root;
@@ -45,5 +52,24 @@ public class SpecialistsListFragment extends ListFragment {
             }
         });
         setListAdapter(adapter);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            if (activity == null) {
+                tasks.addTask(new task() {
+                    @Override
+                    public void apply() {
+                        activity.showSpec();
+                        activity.hideService();
+                    }
+                });
+            } else {
+                activity.showSpec();
+                activity.hideService();
+            }
+        }
     }
 }

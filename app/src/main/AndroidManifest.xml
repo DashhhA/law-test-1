@@ -24,6 +24,7 @@
         <activity android:name=".ui.admin.AdminActivity"/>
         <activity android:name=".ui.admin.new_specialist.NewSpecialistActivity"/>
         <activity android:name=".ui.specialist.SpecialistActivity"/>
+        <activity android:name=".ui.admin.new_service.NewServiceActivity"/>
     </application>
 
 </manifest>

@@ -58,4 +58,14 @@
         app:maxImageSize="36dp"
         app:srcCompat="@drawable/sharp_add_white_48dp" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/adminFABService"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:visibility="gone"
+        android:layout_margin="@dimen/fab_margin"
+        app:maxImageSize="36dp"
+        app:srcCompat="@drawable/sharp_add_white_48dp" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

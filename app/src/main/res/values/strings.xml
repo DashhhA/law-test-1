@@ -22,6 +22,7 @@
     <string name="hint_sname">Second name</string>
     <string name="hint_surname">Surname</string>
     <string name="new_user_title">New user</string>
+    <string name="new_user_creating">Creating account</string>
 
     <!-- user -->
     <string name="menu_home">Home</string>
@@ -30,11 +31,20 @@
     <string name="menu_home_title">Your account information</string>
     <string name="menu_info_title">App information</string>
     <string name="menu_specialists_title">List of specialists</string>
+    <string name="specialist_comment">Leave review</string>
+    <string name="specialist_sign">Appointment</string>
+    <string name="specialist_more">More about\nthis specialist</string>
+    <string name="show_spec_title">Specialist</string>
+    <string name="progress_loading_appointment">Registering appointment</string>
+    <string name="appointment_success">Appointment registered</string>
+    <string name="appointment_comment_hint">Comment</string>
+    <string name="appointment_warning">Please, select needed services</string>
 
     <!-- admin -->
     <string name="admin_title">Admin panel</string>
     <string name="admin_specialists_title">specialists</string>
     <string name="admin_posts_title">comments</string>
+    <string name="admin_services_title">services</string>
 
     <!-- new specialist -->
     <string name="new_specialist_title">New specialist account</string>
@@ -46,4 +56,11 @@
     <string name="specialist_loading">Loading account data</string>
     <string name="specialist_fetching">Fetching data with server</string>
     <string name="specialist_about">About me</string>
+
+    <!-- new service -->
+    <string name="new_service_title">Create new service</string>
+    <string name="new_service_hint_name">Service name</string>
+    <string name="new_service_hint_desc">Short description</string>
+    <string name="new_service_creating">Creating new service</string>
+    <string name="new_service_submit">submit</string>
 </resources>

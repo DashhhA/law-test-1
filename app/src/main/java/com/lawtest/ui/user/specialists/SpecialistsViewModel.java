@@ -1,6 +1,15 @@
 package com.lawtest.ui.user.specialists;
 
-import androidx.lifecycle.ViewModel;
+import com.lawtest.ui.base.BaseSpecialistsListViewModel;
 
-public class SpecialistsViewModel extends ViewModel {
+public class SpecialistsViewModel extends BaseSpecialistsListViewModel {
+    private int position;
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    public int getPosition() {
+        return position;
+    }
 }

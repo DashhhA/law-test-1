@@ -1,4 +1,4 @@
-package com.lawtest.ui.admin.new_specialist;
+package com.lawtest.ui.base;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -10,8 +10,6 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-
-import androidx.annotation.Nullable;
 
 import com.lawtest.R;
 import com.lawtest.model.AgencyService;
@@ -51,7 +49,7 @@ public class ServicesArrayAdapter extends ArrayAdapter<ServicesArrayAdapter.List
         }
     }
 
-    ServicesArrayAdapter(Activity context, int resource){
+    public ServicesArrayAdapter(Activity context, int resource){
         super(context, resource);
 
         textView = new TextView(context);
@@ -76,7 +74,7 @@ public class ServicesArrayAdapter extends ArrayAdapter<ServicesArrayAdapter.List
         return selected;
     }
 
-    void add(AgencyService service) {
+    public void add(AgencyService service) {
         super.add(new ListItm(service));
     }
 

@@ -1,5 +1,6 @@
 package com.lawtest.ui.user;
 
+import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
@@ -18,12 +20,13 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
+import com.lawtest.MainActivity;
 import com.lawtest.R;
+import com.lawtest.model.User;
 
 public class UserActivity extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
-    private UserViewModel viewModel;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,27 +54,22 @@ public class UserActivity extends AppCompatActivity {
         final TextView emailText = hView.findViewById(R.id.sidebarEmailView);
         final ImageView avaView = hView.findViewById(R.id.avatarImageView);
 
-        // получение ViewModel и обновление элементов view по коллбакам
-        viewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        // уведомление о загрузке информации
+        final ProgressDialog progress = new ProgressDialog(this);
+        progress.setMessage(getString(R.string.specialist_loading));
+        progress.show();
 
-        viewModel.getUserName().observe(this, new Observer<String>() {
+        // обновление элементов view по коллбакам
+        LiveData<User> user = MainActivity.getInstance().getViewModel().getUser();
+        user.observe(this, new Observer<User>() {
             @Override
-            public void onChanged(String s) {
-                userNameText.setText(s);
-            }
-        });
-
-        viewModel.getUserEmail().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                emailText.setText(s);
-            }
-        });
-
-        viewModel.getAvaUri().observe(this, new Observer<Uri>() {
-            @Override
-            public void onChanged(Uri uri) {
-                if (uri != null) avaView.setImageURI(uri);
+            public void onChanged(User user) {
+                progress.dismiss();
+                userNameText.setText(
+                        String.format("%s %s", user.fName, user.surName)
+                );
+                emailText.setText(user.email);
+                if ( user.getAvatarUri() != null ) avaView.setImageURI(user.getAvatarUri());
                 else avaView.setImageResource(R.drawable.ic_user_default); // default image
             }
         });

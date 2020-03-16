@@ -9,16 +9,18 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.lawtest.R;
 import com.lawtest.ui.admin.posts.PostsFragment;
+import com.lawtest.ui.admin.services.ServicesListFragment;
 import com.lawtest.ui.admin.specialists.SpecialistsListFragment;
 
 public class MFragmentPagerAdapter extends FragmentPagerAdapter {
-    private Fragment[] fragments = new Fragment[2];
+    private Fragment[] fragments = new Fragment[3];
     private String[] titles;
 
     public MFragmentPagerAdapter(FragmentManager manager, Context context) {
         super(manager);
 
         titles = new String[]{
+                context.getString(R.string.admin_services_title),
                 context.getString(R.string.admin_specialists_title),
                 context.getString(R.string.admin_posts_title)
         };
@@ -29,9 +31,12 @@ public class MFragmentPagerAdapter extends FragmentPagerAdapter {
         if (fragments[position] == null) {
             switch (position){
                 case 0:
-                    fragments[position] = new SpecialistsListFragment();
+                    fragments[position] = new ServicesListFragment();
                     break;
                 case 1:
+                    fragments[position] = new SpecialistsListFragment();
+                    break;
+                case 2:
                     fragments[position] = new PostsFragment();
                     break;
             }

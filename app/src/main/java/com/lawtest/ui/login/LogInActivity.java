@@ -18,8 +18,10 @@ import android.widget.EditText;
 
 import com.lawtest.MainActivity;
 import com.lawtest.R;
+import com.lawtest.ui.admin.AdminActivity;
 import com.lawtest.ui.new_user.NewUserActivity;
 import com.lawtest.ui.specialist.SpecialistActivity;
+import com.lawtest.ui.user.UserActivity;
 
 public class LogInActivity extends AppCompatActivity {
 
@@ -80,16 +82,23 @@ public class LogInActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(int type) {
                         progress.dismiss();
+                        Intent intent;
                         switch (type) {
                             case AuthIdentifier.USER:
+                                MainActivity.getInstance().getViewModel()
+                                        .authUser(viewModel.getEmail(), password.getText().toString());
+                                intent = new Intent(LogInActivity.this, UserActivity.class);
+                                startActivity(intent);
                                 break;
                             case AuthIdentifier.SPECIALIST:
                                 MainActivity.getInstance().getViewModel()
                                         .authSpecialist(viewModel.getEmail(), password.getText().toString());
-                                Intent intent = new Intent(LogInActivity.this, SpecialistActivity.class);
+                                intent = new Intent(LogInActivity.this, SpecialistActivity.class);
                                 startActivity(intent);
                                 break;
                             case AuthIdentifier.ADMIN:
+                                intent = new Intent(LogInActivity.this, AdminActivity.class);
+                                startActivity(intent);
                                 break;
                         }
                     }

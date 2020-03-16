@@ -58,6 +58,7 @@ public class utils {
         FileOutputStream fos = null;
 
         try {
+            if (!filePath.exists()) filePath.createNewFile();
             fos = new FileOutputStream(filePath, false);
             fos.write(source);
         } catch (FileNotFoundException e) {

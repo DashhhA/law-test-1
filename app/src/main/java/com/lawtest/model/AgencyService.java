@@ -1,11 +1,14 @@
 package com.lawtest.model;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.Map;
 
 public class AgencyService {
     public String id;
     public String name;
     public String description;
+    @Exclude
     public static final String DATABASE_ENTRY = "services";
 
     public AgencyService() {} // для firebase DataSnapshot.getValue(AgencyService.class)

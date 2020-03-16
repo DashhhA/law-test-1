@@ -13,10 +13,19 @@
     <fragment
         android:id="@id/nav_specialists"
         android:name="com.lawtest.ui.user.specialists.SpecialistsFragment"
-        android:label="@string/menu_specialists_title"/>
+        android:label="@string/menu_specialists_title">
+        <action
+            android:id="@+id/action_nav_specialists_to_showSpecialistFragment"
+            app:destination="@id/showSpecialistFragment" />
+    </fragment>
 
     <fragment
         android:id="@id/nav_info"
         android:name="com.lawtest.ui.user.info.InfoFragment"
         android:label="@string/menu_info_title"/>
+
+    <fragment
+        android:id="@+id/showSpecialistFragment"
+        android:name="com.lawtest.ui.user.specialists.show.ShowSpecialistFragment"
+        android:label="@string/show_spec_title" />
 </navigation>

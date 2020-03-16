@@ -19,6 +19,7 @@ public class User extends BasePerson{
     public String sName;
     public String surName;
     private String imgUri;
+    public ArrayList<String> appointments;
     boolean isRemember = true;
     long V;
 
@@ -44,6 +45,7 @@ public class User extends BasePerson{
         this.pass = passSalt.pass;
         if (imgUri != null) this.imgUri = imgUri.toString();
         if (avatarUri != null) this.avatarUri = avatarUri.toString();
+        appointments = new ArrayList<>();
         this.isRemember = isRemember;
         V = 0;
     }
@@ -74,6 +76,7 @@ public class User extends BasePerson{
         map.put("email", email);
         map.put("imgUri", imgUri);
         map.put("avatarUri", avatarUri);
+        map.put(Appointment.PERSON_REF, appointments);
         map.put("salt", utils.bytesToArray(salt));
         map.put("pass", utils.bytesToArray(pass));
         map.put("V", V);
@@ -93,8 +96,10 @@ public class User extends BasePerson{
         email = (String) map.get("email");
         imgUri = (String) map.get("imgUri");
         avatarUri = (String) map.get("avatarUri");
+        appointments = (ArrayList<String>) map.get(Appointment.PERSON_REF);
         salt = utils.arrayToBytesL((ArrayList<Long>) map.get("salt"));
         pass = utils.arrayToBytesL((ArrayList<Long>) map.get("pass"));
         V = (long) map.get("V");
+        if (appointments == null) appointments = new ArrayList<>();
     }
 }

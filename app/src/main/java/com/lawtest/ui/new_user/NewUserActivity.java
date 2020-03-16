@@ -1,5 +1,7 @@
 package com.lawtest.ui.new_user;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,8 +21,11 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.lawtest.MainActivity;
 import com.lawtest.R;
+import com.lawtest.model.StateListener;
 import com.lawtest.model.User;
 import com.lawtest.ui.base.CropActivity;
+import com.lawtest.ui.login.LogInActivity;
+import com.lawtest.ui.user.UserActivity;
 import com.lawtest.util.crypto;
 
 public class NewUserActivity extends AppCompatActivity {
@@ -120,7 +125,47 @@ public class NewUserActivity extends AppCompatActivity {
                         viewModel.getAvatarUri(),
                         viewModel.isRemember()
                 );
-                MainActivity.getInstance().getUserRepository().newUser(user,null); // TODO
+
+                final ProgressDialog progress = new ProgressDialog(NewUserActivity.this);
+                progress.setMessage(getString(R.string.new_user_creating));
+                progress.show();
+                MainActivity.getInstance().getViewModel().getUserRepository()
+                        .newPerson(user, new StateListener() {
+                            @Override
+                            public void onStartProcessing() {
+
+                            }
+
+                            @Override
+                            public void onCompleteLocal() {
+
+                            }
+
+                            @Override
+                            public void onCompleteWeb() {
+
+                            }
+
+                            @Override
+                            public void onComplete() {
+                                progress.dismiss();
+                                MainActivity.getInstance().getViewModel()
+                                        .authUser(viewModel.getEmail(), password.getText().toString());
+                                Intent intent = new Intent(NewUserActivity.this, UserActivity.class);
+                                startActivity(intent);
+                            }
+
+                            @Override
+                            public void onFailure(Exception exception) {
+                                progress.dismiss();
+                                AlertDialog.Builder builder = new AlertDialog.Builder(NewUserActivity.this);
+                                builder.setTitle("Error");
+                                builder.setMessage(exception.getMessage());
+                                builder.setPositiveButton("Ok", null);
+                                AlertDialog dialog = builder.create();
+                                dialog.show();
+                            }
+                        });
             }
         });
     }

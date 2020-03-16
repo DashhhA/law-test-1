@@ -19,6 +19,7 @@ public class Specialist extends BasePerson {
     public String sName;
     public String surName;
     private ArrayList<String> services;
+    private ArrayList<String> appointments;
 
     Specialist() {} //default constructor
 
@@ -44,6 +45,7 @@ public class Specialist extends BasePerson {
         this.salt = passSalt.salt;
         this.pass = passSalt.pass;
         if (avatarUri != null) this.avatarUri = avatarUri.toString();
+        appointments = new ArrayList<>();
     }
 
     @Override
@@ -68,6 +70,7 @@ public class Specialist extends BasePerson {
         map.put("avatarUri", avatarUri);
         map.put("salt", utils.bytesToArray(salt));
         map.put("pass", utils.bytesToArray(pass));
+        map.put(Appointment.PERSON_REF, appointments);
         return map;
     }
 
@@ -81,5 +84,8 @@ public class Specialist extends BasePerson {
         avatarUri = (String) map.get("avatarUri");
         salt = utils.arrayToBytesL((ArrayList<Long>) map.get("salt"));
         pass = utils.arrayToBytesL((ArrayList<Long>) map.get("pass"));
+        appointments = (ArrayList<String>) map.get(Appointment.PERSON_REF);
+        if (appointments == null) appointments = new ArrayList<>();
+        if (services == null) services = new ArrayList<>();
     }
 }
