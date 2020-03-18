@@ -2,13 +2,17 @@ package com.lawtest.model;
 
 import android.net.Uri;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public abstract class BasePerson {
     public String avatarUri;
     public String email;
+    public String fName;
+    public String surName;
     public byte[] pass;
     public byte[] salt;
+    public ArrayList<String> appointments;
 
     public abstract Uri getAvatarUri();
     public abstract void setAvatarUri(Uri avatarUri);

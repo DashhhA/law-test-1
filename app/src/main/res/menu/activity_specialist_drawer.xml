@@ -7,6 +7,11 @@
             android:id="@+id/nav_spec_home"
             android:icon="@drawable/round_home_black_48"
             android:title="@string/menu_home" />
+        <item
+            android:id="@+id/nav_spec_appointments"
+            android:icon="@drawable/baseline_list_black_24"
+            android:title="@string/specialist_appointments_list_nav"
+            />
     </group>
     <group
         android:id="@+id/spec_menu_bottom"

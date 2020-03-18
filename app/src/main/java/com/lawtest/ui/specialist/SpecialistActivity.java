@@ -40,7 +40,7 @@ public class SpecialistActivity extends AppCompatActivity {
         DrawerLayout drawer = findViewById(R.id.specialist_drawer_layout);
         NavigationView navigationView = findViewById(R.id.specialist_nav_view);
         appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_spec_home, R.id.nav_spec_info)
+                R.id.nav_spec_home, R.id.nav_spec_appointments, R.id.nav_spec_info)
                 .setDrawerLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_specialist_host_fragment);

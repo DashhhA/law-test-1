@@ -28,4 +28,16 @@
         android:id="@+id/showSpecialistFragment"
         android:name="com.lawtest.ui.user.specialists.show.ShowSpecialistFragment"
         android:label="@string/show_spec_title" />
+    <fragment
+        android:id="@id/nav_user_appointments"
+        android:name="com.lawtest.ui.user.appointments.UserAppointmentsFragment"
+        android:label="@string/specialist_appointments_list_nav" >
+        <action
+            android:id="@+id/action_userAppointmentsFragment_to_appointmentInfoFragment"
+            app:destination="@id/appointmentInfoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/appointmentInfoFragment"
+        android:name="com.lawtest.ui.user.appointments.AppointmentInfoFragment"
+        android:label="AppointmentInfoFragment" />
 </navigation>

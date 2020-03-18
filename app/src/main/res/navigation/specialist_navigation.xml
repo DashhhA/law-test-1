@@ -11,7 +11,20 @@
         android:label="@string/menu_home_title" />
 
     <fragment
+        android:id="@id/nav_spec_appointments"
+        android:name="com.lawtest.ui.specialist.appointments.AppointmentsFragment"
+        android:label="@string/specialist_appointments_list_nav">
+        <action
+            android:id="@+id/action_nav_spec_appointments_to_appointmentFragment"
+            app:destination="@id/appointmentFragment" />
+    </fragment>
+
+    <fragment
         android:id="@id/nav_spec_info"
         android:name="com.lawtest.ui.user.info.InfoFragment"
         android:label="@string/menu_info_title"/>
+    <fragment
+        android:id="@+id/appointmentFragment"
+        android:name="com.lawtest.ui.specialist.appointment.AppointmentFragment"
+        android:label="AppointmentFragment" />
 </navigation>

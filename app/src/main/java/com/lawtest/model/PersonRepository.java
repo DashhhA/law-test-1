@@ -279,7 +279,6 @@ public class PersonRepository<T extends BasePerson> {
                     person.fromMap(map);
                 } catch (Exception e) {
                     // TODO
-                    new String();
                 }
                 if (person != null && person.getAvatarUri() != null) {
                     storage.child(getDatabaseAvaFolder(tClass))

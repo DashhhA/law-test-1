@@ -15,13 +15,10 @@ public class Specialist extends BasePerson {
     public final static String TAG = "specialist";
     public final static String DATABASE_TAG = "specialists";
     public final static String DATABASE_AVA_FOLDER = "ava_imgs_s";
-    public String fName;
     public String sName;
-    public String surName;
     private ArrayList<String> services;
-    private ArrayList<String> appointments;
 
-    Specialist() {} //default constructor
+    public Specialist() {} //default constructor
 
     public Specialist(Map<String, Object> map) {
         super(map);

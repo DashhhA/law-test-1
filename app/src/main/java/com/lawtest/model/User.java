@@ -14,12 +14,9 @@ import java.util.Map;
 public class User extends BasePerson{
     public final static String TAG = "user";
     public final static String DATABASE_TAG = "users";
-    final static String DATABASE_AVA_FOLDER = "ava_imgs";
-    public String fName;
+    public final static String DATABASE_AVA_FOLDER = "ava_imgs";
     public String sName;
-    public String surName;
     private String imgUri;
-    public ArrayList<String> appointments;
     boolean isRemember = true;
     long V;
 
@@ -84,7 +81,7 @@ public class User extends BasePerson{
         return map;
     }
 
-    User(Map<String, Object> map){
+    public User(Map<String, Object> map){
         fromMap(map);
     }
 
