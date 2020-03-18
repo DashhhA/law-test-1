@@ -30,17 +30,16 @@ import com.lawtest.R;
 import com.lawtest.model.AgencyService;
 import com.lawtest.model.Appointment;
 import com.lawtest.model.User;
+import com.lawtest.ui.base.BaseAppointmentsViewModel;
+import com.lawtest.ui.base.BaseAppointmentsViewModelFactory;
 import com.lawtest.ui.base.SpinnerProgress;
-import com.lawtest.ui.login.LogInActivity;
-import com.lawtest.ui.specialist.appointments.AppointmentsFragment;
-import com.lawtest.ui.specialist.appointments.SpecAppointmentsViewModel;
 import com.lawtest.util.MultiTaskCompleteWatcher;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class AppointmentFragment extends Fragment {
-    private SpecAppointmentsViewModel viewModel;
+    private BaseAppointmentsViewModel viewModel;
     private Appointment appointment;
 
     @Nullable
@@ -48,7 +47,9 @@ public class AppointmentFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_specialist_appointment, container, false);
-        viewModel = new ViewModelProvider(requireActivity()).get(SpecAppointmentsViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity(),
+                new BaseAppointmentsViewModelFactory(MainActivity.getInstance().getViewModel().getSpecialist(), User.class)
+        ).get(BaseAppointmentsViewModel.class);
         appointment = viewModel.getCurrent();
 
         return root;
@@ -88,9 +89,9 @@ public class AppointmentFragment extends Fragment {
         final StringBuilder builder = new StringBuilder();
 
         viewModel.getByAppointment(viewModel.getCurrent()).observe(this.getViewLifecycleOwner(),
-                new Observer<SpecAppointmentsViewModel.AppointmentData>() {
+                new Observer<BaseAppointmentsViewModel.AppointmentData>() {
             @Override
-            public void onChanged(final SpecAppointmentsViewModel.AppointmentData appointmentData) {
+            public void onChanged(final BaseAppointmentsViewModel.AppointmentData appointmentData) {
 
                 MultiTaskCompleteWatcher watcher = new MultiTaskCompleteWatcher() {
                     @Override

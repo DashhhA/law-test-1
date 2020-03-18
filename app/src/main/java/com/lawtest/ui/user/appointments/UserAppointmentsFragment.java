@@ -9,7 +9,6 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.ListFragment;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -17,14 +16,10 @@ import androidx.navigation.Navigation;
 import com.lawtest.MainActivity;
 import com.lawtest.R;
 import com.lawtest.model.Appointment;
-import com.lawtest.model.BasePerson;
 import com.lawtest.model.Specialist;
-import com.lawtest.model.User;
 import com.lawtest.ui.base.BaseAppointmentsListAdapter;
 import com.lawtest.ui.base.BaseAppointmentsViewModel;
 import com.lawtest.ui.base.BaseAppointmentsViewModelFactory;
-import com.lawtest.ui.specialist.appointments.AppointmentsListAdapter;
-import com.lawtest.ui.specialist.appointments.SpecAppointmentsViewModel;
 
 import java.util.ArrayList;
 
