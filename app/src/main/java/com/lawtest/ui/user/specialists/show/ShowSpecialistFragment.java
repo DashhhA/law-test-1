@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -25,6 +27,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.lawtest.MainActivity;
 import com.lawtest.R;
 import com.lawtest.model.AgencyService;
@@ -141,46 +146,52 @@ public class ShowSpecialistFragment extends Fragment {
             }
         };
 
-        getServiceDialog(new mServiceSetListener() {
+        datePicker(new mDateSetListener() {
             @Override
-            public void onServiceSet(final ArrayList<AgencyService> services, final String comment) {
-                datePicker(new mDateSetListener() {
+            public void onDateSet(final Appointment.DateTime dateTime) {
+                getAvailableTimes(dateTime, new mAvailableTimesFoundListener() {
                     @Override
-                    public void onDateSet(Appointment.DateTime dateTime) {
-                        String servicesNames = "[";
-
-                        final Appointment appointment = new Appointment();
-                        appointment.dateTime = dateTime;
-                        appointment.status = Appointment.STATUS_SENT;
-                        appointment.userId = MainActivity.getInstance().getViewModel().getAuth().getUid();
-                        appointment.specialistId = specialist.getUid();
-                        appointment.userComment = comment;
-                        appointment.ServiceIds = new ArrayList<>();
-                        for (AgencyService service: services) {
-                            appointment.ServiceIds.add(service.id);
-                            servicesNames = servicesNames + service.name + ", ";
-                        }
-                        servicesNames = servicesNames.substring(0, servicesNames.length() -2) + "] ";
-                        appointment.id = UUID.randomUUID().toString();
-
-                        // окно подтверждения записи
-                        AlertDialog.Builder builder =
-                                new AlertDialog.Builder(ShowSpecialistFragment.this.getActivity());
-                        builder.setMessage(String.format(getString(R.string.appointment_confirm),
-                                specialist.fName, specialist.surName,
-                                servicesNames,
-                                appointment.dateTime.hour, appointment.dateTime.minute,
-                                appointment.dateTime.day, appointment.dateTime.month, appointment.dateTime.year
-                        ));
-                        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onAvailableTimesFoundListener(ArrayList<Appointment.DateTime> available) {
+                        getServiceDialog(available, new mServiceSetListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                progress.show();
-                                specialist.addAppointment(appointment, appointmentWatcher, ShowSpecialistFragment.this.getActivity());
+                            public void onServiceSet(Appointment.DateTime selectedTime, ArrayList<AgencyService> services, String comment) {
+                                String servicesNames = "[";
+
+                                final Appointment appointment = new Appointment();
+                                appointment.dateTime = selectedTime;
+                                appointment.status = Appointment.STATUS_SENT;
+                                appointment.userId = MainActivity.getInstance().getViewModel().getAuth().getUid();
+                                appointment.specialistId = specialist.getUid();
+                                appointment.userComment = comment;
+                                appointment.ServiceIds = new ArrayList<>();
+                                for (AgencyService service: services) {
+                                    appointment.ServiceIds.add(service.id);
+                                    servicesNames = servicesNames + service.name + ", ";
+                                }
+                                servicesNames = servicesNames.substring(0, servicesNames.length() -2) + "] ";
+                                appointment.id = UUID.randomUUID().toString();
+
+                                // окно подтверждения записи
+                                AlertDialog.Builder builder =
+                                        new AlertDialog.Builder(ShowSpecialistFragment.this.getActivity());
+                                builder.setMessage(String.format(getString(R.string.appointment_confirm),
+                                        specialist.fName, specialist.surName,
+                                        servicesNames,
+                                        appointment.dateTime.hour, appointment.dateTime.minute,
+                                        appointment.dateTime.day, appointment.dateTime.month, appointment.dateTime.year
+                                ));
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        progress.show();
+                                        specialist.addAppointment(appointment, appointmentWatcher,
+                                                ShowSpecialistFragment.this.getActivity());
+                                    }
+                                });
+                                builder.setNegativeButton("Cancel", null);
+                                builder.create().show();
                             }
                         });
-                        builder.setNegativeButton("Cancel", null);
-                        builder.create().show();
                     }
                 });
             }
@@ -205,13 +216,13 @@ public class ShowSpecialistFragment extends Fragment {
                         dateTime.month = monthOfYear;
                         dateTime.year = year;
 
-                        timePicker(dateTime, listener);
+                        listener.onDateSet(dateTime);
                     }
                 }, mYear, mMonth, mDay);
         datePickerDialog.show();
     }
 
-    private void timePicker(final Appointment.DateTime dateTime, final mDateSetListener listener){
+    /*private void timePicker(final Appointment.DateTime dateTime, final mDateSetListener listener){
         // Get Current Time
         final Calendar c = Calendar.getInstance();
         int mHour = c.get(Calendar.HOUR_OF_DAY);
@@ -231,13 +242,113 @@ public class ShowSpecialistFragment extends Fragment {
                     }
                 }, mHour, mMinute, true);
         timePickerDialog.show();
+    }*/
+    private void getOccupiedTimes(final ArrayList<Appointment.DateTime> occupied,
+                                  MultiTaskCompleteWatcher watcher
+    ) {
+        occupied.clear();
+        MultiTaskCompleteWatcher.Task wholeTask = watcher.newTask();
+        if ( specialist.appointments.isEmpty() ) {
+            wholeTask.complete();
+            return;
+        }
+        for ( String appointmentId: specialist.appointments ) {
+            final MultiTaskCompleteWatcher.Task task = watcher.newTask();
+            MainActivity.getInstance().getViewModel().getDatabase()
+                    .child(Appointment.DATABASE_REF)
+                    .child(appointmentId)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Appointment appointmentTemp = dataSnapshot.getValue(Appointment.class);
+                            if ( !appointmentTemp.status.equals(Appointment.STATUS_REJECTED) ) {
+                                occupied.add(appointmentTemp.dateTime);
+                            }
+                            task.complete();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            task.fail(databaseError.toException());
+                        }
+                    });
+        }
+        wholeTask.complete();
     }
 
-    private void getServiceDialog(final mServiceSetListener listener) {
+    private void getAvailableTimes( final Appointment.DateTime date,
+                                    final mAvailableTimesFoundListener listener
+    ) {
+        final ArrayList<Appointment.DateTime> available = Appointment.getAvailableOnDay(date);
+        final ProgressDialog progress = new ProgressDialog(this.getActivity());
+        progress.setMessage(getString(R.string.appointment_loading_time));
+        progress.show();
+
+        final ArrayList<Appointment.DateTime> occupied = new ArrayList<>();
+        MultiTaskCompleteWatcher occupiedWatcher = new MultiTaskCompleteWatcher() {
+            @Override
+            public void allComplete() {
+                for ( Appointment.DateTime unavailableTime: occupied ) {
+                    if (    unavailableTime.year >= date.year &&
+                            unavailableTime.month >= date.month &&
+                            unavailableTime.day >= date.day
+                    ) {
+                        int ind = available.indexOf(unavailableTime);
+                        if ( ind >= 0 ) available.remove( ind );
+                    }
+                }
+
+                progress.dismiss();
+                if (available.isEmpty()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ShowSpecialistFragment.this.getActivity());
+                    builder.setMessage(R.string.appointment_no_available_time);
+                    builder.setPositiveButton("Ok", null);
+                    builder.create().show();
+                }else {
+                    listener.onAvailableTimesFoundListener(available);
+                }
+            }
+
+            @Override
+            public void onTaskFailed(Task task, Exception exception) {
+                // todo
+            }
+        };
+        getOccupiedTimes(occupied, occupiedWatcher);
+    }
+
+    private void getServiceDialog(ArrayList<Appointment.DateTime> available,
+                                  final mServiceSetListener listener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
         View view = LayoutInflater.from(this.getContext()).inflate(R.layout.dialog_appointment_old,null);
         final EditText text = view.findViewById(R.id.dialogAppointmentComment);
         builder.setView(view);
+
+        String[] times = new String[available.size()];
+        int i = 0;
+        for (Appointment.DateTime dateTime: available) {
+            times[i] = String.format("%02d:%02d", dateTime.hour, dateTime.minute);
+            i++;
+        }
+
+        final Appointment.DateTime selectedTime = available.get(0);
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getActivity(),
+                android.R.layout.simple_list_item_1, times);
+        final Spinner timeSpinner = view.findViewById(R.id.timeSelect);
+        timeSpinner.setAdapter(adapter);
+        timeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selected = adapter.getItem(position);
+                selectedTime.hour = Integer.parseInt(selected.substring(0,2));
+                selectedTime.minute = Integer.parseInt(selected.substring(3));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         final ServicesArrayAdapter arrayAdapter = new ServicesArrayAdapter(this.getActivity(), 0);
         final Spinner spinner = view.findViewById(R.id.dialogAppointmentSpinner);
@@ -255,6 +366,7 @@ public class ShowSpecialistFragment extends Fragment {
             }
         });
 
+        builder.setNegativeButton("Cancel", null);
         builder.setPositiveButton("Ok", null);
 
         final AlertDialog alert = builder.create();
@@ -272,7 +384,7 @@ public class ShowSpecialistFragment extends Fragment {
                         } else {
                             alert.dismiss();
                             hideKeyboard(ShowSpecialistFragment.this.getActivity());
-                            listener.onServiceSet(arrayAdapter.getSelected(), text.getText().toString());
+                            listener.onServiceSet(selectedTime, arrayAdapter.getSelected(), text.getText().toString());
                         }
                     }
                 });
@@ -283,7 +395,11 @@ public class ShowSpecialistFragment extends Fragment {
     }
 
     private interface mServiceSetListener {
-        void onServiceSet(ArrayList<AgencyService> services, String comment);
+        void onServiceSet(Appointment.DateTime selectedTime, ArrayList<AgencyService> services, String comment);
+    }
+
+    private interface mAvailableTimesFoundListener {
+        void onAvailableTimesFoundListener(ArrayList<Appointment.DateTime> available);
     }
 
     // функция, прячущая клавиатуру

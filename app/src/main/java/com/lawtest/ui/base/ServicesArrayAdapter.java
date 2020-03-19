@@ -143,6 +143,7 @@ public class ServicesArrayAdapter extends ArrayAdapter<ServicesArrayAdapter.List
     }
 
     private void notifyCheckedChanged() {
+        if ( checkedChangeListeners == null ) return;
         for (mOnCheckedChangeListener listener: checkedChangeListeners) {
             listener.onChanged();
         }
