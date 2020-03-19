@@ -31,7 +31,7 @@ public class SpecialistForList{
     public String surName;
     public String email;
     public ArrayList<String> services;
-    private ArrayList<String> appointments;
+    public ArrayList<String> appointments;
     private String avatarUri;
     private MutableLiveData<SpecialistForList> data;
     private StorageReference storage;

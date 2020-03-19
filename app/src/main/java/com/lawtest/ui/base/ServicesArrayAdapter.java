@@ -22,6 +22,11 @@ public class ServicesArrayAdapter extends ArrayAdapter<ServicesArrayAdapter.List
     private Activity context;
     private boolean isFromView = false;
     private TextView textView;
+    private ArrayList<mOnCheckedChangeListener> checkedChangeListeners;
+
+    public interface mOnCheckedChangeListener {
+        public void onChanged();
+    }
 
     public class ListItm {
         private AgencyService service;
@@ -63,6 +68,14 @@ public class ServicesArrayAdapter extends ArrayAdapter<ServicesArrayAdapter.List
         this.context = context;
     }
 
+    public ServicesArrayAdapter(Activity activity, TextView textView) {
+        super(activity, 0);
+
+        this.textView = textView;
+        this.context = activity;
+        checkedChangeListeners = new ArrayList<>();
+    }
+
     public ArrayList<AgencyService> getSelected() {
         ArrayList<AgencyService> selected = new ArrayList<>();
         if (isEmpty()) return selected;
@@ -76,6 +89,10 @@ public class ServicesArrayAdapter extends ArrayAdapter<ServicesArrayAdapter.List
 
     public void add(AgencyService service) {
         super.add(new ListItm(service));
+    }
+
+    public void addOnCheckedChangeListener( mOnCheckedChangeListener listener ) {
+        checkedChangeListeners.add(listener);
     }
 
     @Override
@@ -117,11 +134,18 @@ public class ServicesArrayAdapter extends ArrayAdapter<ServicesArrayAdapter.List
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (!isFromView) {
                     getItem(position).setSelected(isChecked);
+                    notifyCheckedChanged();
                 }
             }
         });
 
         return rowView;
+    }
+
+    private void notifyCheckedChanged() {
+        for (mOnCheckedChangeListener listener: checkedChangeListeners) {
+            listener.onChanged();
+        }
     }
 
     private class ViewHolder {

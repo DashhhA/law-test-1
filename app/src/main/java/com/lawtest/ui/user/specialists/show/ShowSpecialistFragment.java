@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -236,7 +235,7 @@ public class ShowSpecialistFragment extends Fragment {
 
     private void getServiceDialog(final mServiceSetListener listener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
-        View view = LayoutInflater.from(this.getContext()).inflate(R.layout.dialog_appointment,null);
+        View view = LayoutInflater.from(this.getContext()).inflate(R.layout.dialog_appointment_old,null);
         final EditText text = view.findViewById(R.id.dialogAppointmentComment);
         builder.setView(view);
 

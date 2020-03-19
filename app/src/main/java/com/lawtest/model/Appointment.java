@@ -36,5 +36,37 @@ public class Appointment {
         public int minute;
 
         public DateTime() {}
+
+        @Exclude
+        @Override
+        public boolean equals(Object obj) {
+            if ( obj.getClass().isAssignableFrom(DateTime.class) ) {
+                return ((DateTime) obj).minute == this.minute &&
+                        ((DateTime) obj).hour == this.hour &&
+                        ((DateTime) obj).day == this.day &&
+                        ((DateTime) obj).month == this.month &&
+                        ((DateTime) obj).year == this.year;
+
+            }
+            return false;
+        }
+    }
+
+    @Exclude
+    public static ArrayList<DateTime> getAvailableOnDay(DateTime day) {
+        ArrayList<DateTime> times = new ArrayList<>();
+        for ( int hour = 8; hour < 18; hour++ ) {
+            if ( hour != 13 ) {
+                DateTime available = new DateTime();
+                available.year = day.year;
+                available.month = day.month;
+                available.day = day.day;
+                available.hour = hour;
+                available.minute = 0;
+                times.add(available);
+            }
+        }
+
+        return times;
     }
 }

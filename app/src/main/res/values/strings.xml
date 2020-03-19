@@ -31,6 +31,7 @@
     <string name="menu_home_title">Your account information</string>
     <string name="menu_info_title">App information</string>
     <string name="menu_specialists_title">List of specialists</string>
+    <string name="menu_new_appointment_title">New appointment</string>
     <string name="specialist_comment">Leave review</string>
     <string name="specialist_sign">Appointment</string>
     <string name="specialist_more">More about\nthis specialist</string>
@@ -42,6 +43,10 @@
     <string name="appointment_confirm">You attempt to request an appointment with specialist %s %s for services %son %02d:%02d, %02d:%02d:%d</string>
     <string name="appointment_services">Services:</string>
     <string name="appointment_spec_comment">Specialist comment:</string>
+    <string name="new_appointment_available_specs_text">Specialists, available for this services:</string>
+    <string name="appointment_loading_time">Loading available time</string>
+    <string name="select_time">Select time</string>
+    <string name="appointment_no_available_time">No available time for this specialist</string>
 
     <!-- admin -->
     <string name="admin_title">Admin panel</string>

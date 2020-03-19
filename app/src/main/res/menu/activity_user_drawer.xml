@@ -16,6 +16,10 @@
             android:id="@+id/nav_user_appointments"
             android:icon="@drawable/baseline_list_black_24"
             android:title="@string/specialist_appointments_list_nav" />
+        <item
+            android:id="@+id/nav_user_new_appointment"
+            android:icon="@drawable/baseline_playlist_add_black_48"
+            android:title="@string/menu_new_appointment_title"/>
     </group>
     <group
         android:id="@+id/user_menu_bottom"

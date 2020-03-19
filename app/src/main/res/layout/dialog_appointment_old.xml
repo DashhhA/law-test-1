@@ -17,10 +17,16 @@
                 android:layout_weight="1"
                 style="@style/MainTextStyle"/>
             <Spinner
-                android:id="@+id/dialogAppointmentSpinner"
+                android:id="@+id/timeSelect"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </TableRow>
+
+        <Spinner
+            android:id="@+id/dialogAppointmentSpinner"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <EditText
             android:id="@+id/dialogAppointmentComment"
