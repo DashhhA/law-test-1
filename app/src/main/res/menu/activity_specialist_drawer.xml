@@ -10,7 +10,11 @@
         <item
             android:id="@+id/nav_spec_appointments"
             android:icon="@drawable/baseline_list_black_24"
-            android:title="@string/specialist_appointments_list_nav"
+            android:title="@string/specialist_appointments_list_nav" />
+        <item
+            android:id="@+id/nav_spec_reviews"
+            android:icon="@drawable/baseline_comment_black_48"
+            android:title="@string/reviews_title"
             />
     </group>
     <group

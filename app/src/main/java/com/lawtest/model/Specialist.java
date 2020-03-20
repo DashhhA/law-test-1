@@ -17,7 +17,7 @@ public class Specialist extends BasePerson {
     public final static String DATABASE_AVA_FOLDER = "ava_imgs_s";
     public String sName;
     private ArrayList<String> services;
-    private ArrayList<String> reviews;
+    public ArrayList<String> reviews;
 
     public Specialist() {} //default constructor
 

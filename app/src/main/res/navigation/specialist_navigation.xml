@@ -20,9 +20,15 @@
     </fragment>
 
     <fragment
+        android:id="@id/nav_spec_reviews"
+        android:name="com.lawtest.ui.specialist.reviews.ReviewsFragment"
+        android:label="@string/reviews_title"/>
+
+    <fragment
         android:id="@id/nav_spec_info"
         android:name="com.lawtest.ui.user.info.InfoFragment"
         android:label="@string/menu_info_title"/>
+
     <fragment
         android:id="@+id/appointmentFragment"
         android:name="com.lawtest.ui.specialist.appointment.AppointmentFragment"
