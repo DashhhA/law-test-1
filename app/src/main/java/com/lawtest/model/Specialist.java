@@ -17,6 +17,7 @@ public class Specialist extends BasePerson {
     public final static String DATABASE_AVA_FOLDER = "ava_imgs_s";
     public String sName;
     private ArrayList<String> services;
+    private ArrayList<String> reviews;
 
     public Specialist() {} //default constructor
 
@@ -43,6 +44,7 @@ public class Specialist extends BasePerson {
         this.pass = passSalt.pass;
         if (avatarUri != null) this.avatarUri = avatarUri.toString();
         appointments = new ArrayList<>();
+        reviews = new ArrayList<>();
     }
 
     @Override
@@ -64,6 +66,7 @@ public class Specialist extends BasePerson {
         map.put("surName", surName);
         map.put("email", email);
         map.put("services", services);
+        map.put(Review.PERSON_REF, reviews);
         map.put("avatarUri", avatarUri);
         map.put("salt", utils.bytesToArray(salt));
         map.put("pass", utils.bytesToArray(pass));
@@ -78,6 +81,7 @@ public class Specialist extends BasePerson {
         surName = (String) map.get("surName");
         email = (String) map.get("email");
         services = (ArrayList<String>) map.get("services");
+        reviews = (ArrayList<String>) map.get(Review.PERSON_REF);
         avatarUri = (String) map.get("avatarUri");
         salt = utils.arrayToBytesL((ArrayList<Long>) map.get("salt"));
         pass = utils.arrayToBytesL((ArrayList<Long>) map.get("pass"));

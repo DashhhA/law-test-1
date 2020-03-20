@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
-import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,9 +16,9 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,7 +33,10 @@ import com.lawtest.MainActivity;
 import com.lawtest.R;
 import com.lawtest.model.AgencyService;
 import com.lawtest.model.Appointment;
+import com.lawtest.model.Review;
+import com.lawtest.model.ReviewForList;
 import com.lawtest.model.SpecialistForList;
+import com.lawtest.ui.base.BaseReviewListAdapter;
 import com.lawtest.ui.base.ServicesArrayAdapter;
 import com.lawtest.ui.user.specialists.SpecialistsViewModel;
 import com.lawtest.util.MultiTaskCompleteWatcher;
@@ -46,7 +48,7 @@ import java.util.UUID;
 public class ShowSpecialistFragment extends Fragment {
     private SpecialistsViewModel viewModel;
     private SpecServicesViewModel servicesViewModel;
-    SpecialistForList specialist;
+    private SpecialistForList specialist;
 
     @Nullable
     @Override
@@ -66,6 +68,7 @@ public class ShowSpecialistFragment extends Fragment {
         final ImageView avaView = view.findViewById(R.id.showSpecAvaView);
         final TextView nameText = view.findViewById(R.id.showSpecName);
         final TextView emailText = view.findViewById(R.id.showSpecEmail);
+        final ListView reviewsList = view.findViewById(R.id.showComments);
         final Button reviewBtn = view.findViewById(R.id.btnReview);
         final Button appointmentBtn = view.findViewById(R.id.btnAppointment);
         final Button moreBtn = view.findViewById(R.id.btnMore);
@@ -73,6 +76,8 @@ public class ShowSpecialistFragment extends Fragment {
         reviewBtn.setEnabled(false);
         appointmentBtn.setEnabled(false);
         moreBtn.setEnabled(false);
+        final BaseReviewListAdapter reviewsAdapter = new BaseReviewListAdapter(requireActivity());
+        reviewsList.setAdapter(reviewsAdapter);
 
         viewModel.getSpecialists().observe(this.getViewLifecycleOwner(), new Observer<ArrayList<SpecialistForList>>() {
             @Override
@@ -82,16 +87,26 @@ public class ShowSpecialistFragment extends Fragment {
                         ShowSpecialistFragment.this, new SpecServiceViewModelFactory(specialist))
                         .get(SpecServicesViewModel.class);
 
+                servicesViewModel.getReviews().observe(
+                        ShowSpecialistFragment.this.getViewLifecycleOwner(),
+                        new Observer<ArrayList<ReviewForList>>() {
+                            @Override
+                            public void onChanged(ArrayList<ReviewForList> reviewForLists) {
+                                reviewsAdapter.updateReviews(reviewForLists);
+                            }
+                        });
+
                 specialist.getSpecialist().observe(
                         ShowSpecialistFragment.this.getViewLifecycleOwner(),
                         new Observer<SpecialistForList>() {
                     @Override
-                    public void onChanged(SpecialistForList specialist) {
+                    public void onChanged(final SpecialistForList specialist) {
                         ShowSpecialistFragment.this.specialist = specialist;
                         reviewBtn.setEnabled(true);
                         appointmentBtn.setEnabled(true);
                         moreBtn.setEnabled(true);
 
+                        // заполнение элементов ui
                         String name;
                         if (specialist.sName != null) {
                             name = String.format("%s %s %s",
@@ -104,6 +119,14 @@ public class ShowSpecialistFragment extends Fragment {
                         emailText.setText(specialist.email);
                         if ( specialist.getAvatarUri() != null ) avaView.setImageURI(specialist.getAvatarUri());
                         else avaView.setImageResource(R.drawable.ic_user_default); // default image
+
+                        // new on click listener, for this snapshot of a specialist
+                        reviewBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                showReviewDialog(specialist);
+                            }
+                        });
                     }
                 });
             }
@@ -184,8 +207,7 @@ public class ShowSpecialistFragment extends Fragment {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         progress.show();
-                                        specialist.addAppointment(appointment, appointmentWatcher,
-                                                ShowSpecialistFragment.this.getActivity());
+                                        specialist.addAppointment(appointment, appointmentWatcher);
                                     }
                                 });
                                 builder.setNegativeButton("Cancel", null);
@@ -222,27 +244,6 @@ public class ShowSpecialistFragment extends Fragment {
         datePickerDialog.show();
     }
 
-    /*private void timePicker(final Appointment.DateTime dateTime, final mDateSetListener listener){
-        // Get Current Time
-        final Calendar c = Calendar.getInstance();
-        int mHour = c.get(Calendar.HOUR_OF_DAY);
-        int mMinute = c.get(Calendar.MINUTE);
-
-        // Launch Time Picker Dialog
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this.getContext(),
-                new TimePickerDialog.OnTimeSetListener() {
-
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-
-                        dateTime.hour = hourOfDay;
-                        dateTime.minute = minute;
-
-                        listener.onDateSet(dateTime);
-                    }
-                }, mHour, mMinute, true);
-        timePickerDialog.show();
-    }*/
     private void getOccupiedTimes(final ArrayList<Appointment.DateTime> occupied,
                                   MultiTaskCompleteWatcher watcher
     ) {
@@ -388,6 +389,60 @@ public class ShowSpecialistFragment extends Fragment {
                         }
                     }
                 });
+    }
+
+    private void showReviewDialog(final SpecialistForList specialist) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final EditText editText = new EditText(getActivity());
+        editText.setHint(R.string.review_review_hint);
+        builder.setView(editText);
+        builder.setPositiveButton("Ok", null);
+        builder.setNegativeButton("Cancel", null);
+
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = editText.getText().toString();
+                if ( !text.trim().isEmpty() ) {
+                    final ProgressDialog progress = new ProgressDialog(getActivity());
+                    progress.setMessage(getString(R.string.login_checking));
+                    progress.show();
+
+                    MultiTaskCompleteWatcher watcher = new MultiTaskCompleteWatcher() {
+                        @Override
+                        public void allComplete() {
+                            progress.dismiss();
+                            dialog.dismiss();
+                        }
+
+                        @Override
+                        public void onTaskFailed(Task task, Exception exception) {
+                            progress.dismiss();
+                            dialog.dismiss();
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            builder.setTitle("Error");
+                            builder.setMessage(exception.getMessage());
+                            builder.setPositiveButton("Ok", null);
+                            builder.create().show();
+                        }
+                    };
+
+                    Review review = new Review();
+                    review.body = text;
+                    review.specialistId = specialist.getUid();
+                    review.userId = MainActivity.getInstance().getViewModel().getAuth().getUid();
+                    specialist.addReview(review, watcher);
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Error");
+                    builder.setMessage(R.string.review_must_not_be_empty);
+                    builder.setPositiveButton("Ok", null);
+                    builder.create().show();
+                }
+            }
+        });
     }
 
     private interface mDateSetListener {

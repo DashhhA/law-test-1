@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -277,7 +278,7 @@ public class NewAppointmentFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         hideKeyboard(NewAppointmentFragment.this.getActivity());
                         progress.show();
-                        specialist.addAppointment(appointment, appointmentWatcher, NewAppointmentFragment.this.getActivity());
+                        specialist.addAppointment(appointment, appointmentWatcher);
                     }
                 });
                 builder.setNegativeButton("Cancel", null);
@@ -337,6 +338,7 @@ public class NewAppointmentFragment extends Fragment {
                         listener.onDateSet(dateTime);
                     }
                 }, mYear, mMonth, mDay);
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
         datePickerDialog.show();
     }
 

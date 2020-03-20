@@ -47,6 +47,9 @@
     <string name="appointment_loading_time">Loading available time</string>
     <string name="select_time">Select time</string>
     <string name="appointment_no_available_time">No available time for this specialist</string>
+    <string name="review_review_hint">Review</string>
+    <string name="review_must_not_be_empty">Review must not be empty</string>
+    <string name="review_registering">Adding review</string>
 
     <!-- admin -->
     <string name="admin_title">Admin panel</string>

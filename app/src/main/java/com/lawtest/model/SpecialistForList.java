@@ -23,6 +23,7 @@ import com.lawtest.util.utils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class SpecialistForList{
@@ -32,6 +33,7 @@ public class SpecialistForList{
     public String email;
     public ArrayList<String> services;
     public ArrayList<String> appointments;
+    public ArrayList<String> reviews;
     private String avatarUri;
     private MutableLiveData<SpecialistForList> data;
     private StorageReference storage;
@@ -88,8 +90,10 @@ public class SpecialistForList{
         email = (String) map.get("email");
         services = (ArrayList<String>) map.get("services");
         appointments = (ArrayList<String>) map.get(Appointment.PERSON_REF);
+        reviews = (ArrayList<String>) map.get(Review.PERSON_REF);
         if (appointments == null) appointments = new ArrayList<>();
         if (services == null) services = new ArrayList<>();
+        if (reviews == null) reviews = new ArrayList<>();
         avatarUri = (String) map.get("avatarUri");
         if (avatarUri == null) {
             data.postValue(SpecialistForList.this);
@@ -105,7 +109,7 @@ public class SpecialistForList{
         return key;
     }
 
-    public void addAppointment(final Appointment appointment, MultiTaskCompleteWatcher watcher, FragmentActivity activity) {
+    public void addAppointment(final Appointment appointment, MultiTaskCompleteWatcher watcher) {
 
         final MultiTaskCompleteWatcher.Task databaseTask = watcher.newTask();
         final MultiTaskCompleteWatcher.Task userTask = watcher.newTask();
@@ -151,5 +155,37 @@ public class SpecialistForList{
                     }
                 });
 
+    }
+
+    public void addReview(final Review review, MultiTaskCompleteWatcher watcher) {
+        final MultiTaskCompleteWatcher.Task databaseTask = watcher.newTask();
+        final MultiTaskCompleteWatcher.Task specialistTask = watcher.newTask();
+
+        String id = UUID.randomUUID().toString();
+        MainActivity.getInstance().getViewModel().getDatabase()
+                .child(Review.DATABASE_REF)
+                .child(id)
+                .setValue(review)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) databaseTask.complete();
+                        else databaseTask.fail(task.getException());
+                    }
+                });
+
+        reviews.add(id);
+        MainActivity.getInstance().getViewModel().getDatabase()
+                .child(Specialist.DATABASE_TAG)
+                .child(key)
+                .child(Review.PERSON_REF)
+                .setValue(reviews)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) specialistTask.complete();
+                        else specialistTask.fail(task.getException());
+                    }
+                });
     }
 }
