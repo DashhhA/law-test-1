@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,6 +24,7 @@ import com.lawtest.R;
 import com.lawtest.model.StateListener;
 import com.lawtest.model.User;
 import com.lawtest.ui.base.CropActivity;
+import com.lawtest.ui.base.EditNameDialog;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -30,7 +33,8 @@ public class HomeFragment extends Fragment {
     public static final int CROP_IMAGE = 2;
     private ImageView avaView;
     private User user;
-    // обработчик нажатия на изображение, стартующий активити для выбора изобрадения из галереи
+    // обработчик нажатия на кнопку редактирования, стартующий активити для выбора изобрадения
+    // из галереи
     private View.OnClickListener select_img_lstnr = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -64,6 +68,38 @@ public class HomeFragment extends Fragment {
         avaView = view.findViewById(R.id.userAvatarEditView);
         final TextView nameText = view.findViewById(R.id.userName);
         final TextView emailText = view.findViewById(R.id.userEmail);
+        final ImageButton redactButton = view.findViewById(R.id.userHomeRedact);
+        final ImageButton erase = view.findViewById(R.id.userHomeErase);
+        final ImageButton redactName = view.findViewById(R.id.userEditName);
+        redactButton.setOnClickListener(select_img_lstnr);
+        erase.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                user.setAvatarUri(null);
+                MainActivity.getInstance().getViewModel().getUserRepository().savePerson(null);
+            }
+        });
+        redactName .setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new EditNameDialog(getContext()).setOnValuesSetListener(
+                        new EditNameDialog.OnValuesSetListener() {
+                    @Override
+                    public void onValuesSet(final String fName, final String sName, final String surName) {
+                        MainActivity.getInstance().getViewModel().getUser().observe(
+                                getViewLifecycleOwner(), new Observer<User>() {
+                            @Override
+                            public void onChanged(User user) {
+                                user.fName = fName;
+                                user.sName = sName;
+                                user.surName = surName;
+                                MainActivity.getInstance().getViewModel().getUserRepository().savePerson(null);
+                            }
+                        });
+                    }
+                });
+            }
+        });
 
         LiveData<User> user = MainActivity.getInstance().getViewModel().getUser();
         user.observe(this.getViewLifecycleOwner(), new Observer<User>() {
@@ -85,8 +121,6 @@ public class HomeFragment extends Fragment {
                 else avaView.setImageResource(R.drawable.ic_user_default); // default image
             }
         });
-
-        avaView.setOnClickListener(select_img_lstnr);
     }
 
     @Override

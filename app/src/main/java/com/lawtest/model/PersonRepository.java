@@ -131,12 +131,12 @@ public class PersonRepository<T extends BasePerson> {
             @Override
             public void allComplete() {
                 data.postValue(localPerson);
-                listener.onComplete();
+                if (listener != null) listener.onComplete();
             }
 
             @Override
             public void onTaskFailed(Task task, Exception exception) {
-                listener.onFailure(exception);
+                if (listener != null) listener.onFailure(exception);
             }
         };
         MultiTaskCompleteWatcher.Task localTask = watcher.newTask();

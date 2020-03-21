@@ -18,6 +18,7 @@ import java.util.ArrayList;
 public class ServicesListViewModel extends ViewModel {
     private ArrayList<AgencyService> services;
     private MutableLiveData<ArrayList<AgencyService>> data;
+    private AgencyService current;
 
     public ServicesListViewModel() {
         services = new ArrayList<>();
@@ -64,10 +65,13 @@ public class ServicesListViewModel extends ViewModel {
     }
 
     private void removeServiceByKey(String key) {
+        ArrayList<AgencyService> toRemove = new ArrayList<>();
         for (AgencyService service: services) {
             if (service.id.equals(key)) {
-                services.remove(service);
+                toRemove.add(service);
+                break;
             }
         }
+        services.removeAll(toRemove);
     }
 }

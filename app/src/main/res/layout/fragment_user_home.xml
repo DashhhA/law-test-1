@@ -50,23 +50,13 @@
                 android:id="@+id/userEmail"
                 style="@style/MainTextStyle"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:paddingLeft="40dp" />
+                android:gravity="center" />
 
-            <ImageButton
-                android:id="@+id/userEditEmail"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="40dp"
-                android:layout_height="match_parent"
-                android:background="?attr/selectableItemBackground"
-                android:paddingEnd="16dp"
-                android:paddingRight="16dp"
-                android:src="@drawable/baseline_edit_black_24" />
         </TableRow>
     </TableLayout>
 
     <ImageButton
-        android:id="@+id/imageButton3"
+        android:id="@+id/userHomeRedact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@+id/userAvatarEditView"
@@ -74,12 +64,11 @@
         app:srcCompat="@drawable/baseline_edit_black_24" />
 
     <ImageButton
-        android:id="@+id/imageButton4"
+        android:id="@+id/userHomeErase"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/imageButton3"
+        app:layout_constraintBottom_toTopOf="@+id/userHomeRedact"
         app:layout_constraintStart_toEndOf="@+id/userAvatarEditView"
-        android:src="@drawable/baseline_close_24"
-        tools:layout_editor_absoluteX="269dp" />
+        android:src="@drawable/baseline_close_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

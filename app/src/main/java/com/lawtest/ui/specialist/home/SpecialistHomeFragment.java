@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,6 +22,7 @@ import com.lawtest.R;
 import com.lawtest.model.Specialist;
 import com.lawtest.model.StateListener;
 import com.lawtest.ui.base.CropActivity;
+import com.lawtest.ui.base.EditNameDialog;
 import com.lawtest.ui.login.LogInActivity;
 
 import static android.app.Activity.RESULT_OK;
@@ -66,6 +68,38 @@ public class SpecialistHomeFragment extends Fragment {
         final TextView nameText = view.findViewById(R.id.specName);
         final TextView emailText = view.findViewById(R.id.specEmail);
         TextView aboutText = view.findViewById(R.id.specAbout);
+        final ImageButton redact = view.findViewById(R.id.specHomeRedact);
+        final ImageButton erase = view.findViewById(R.id.specHomeErase);
+        final ImageButton nameEdit = view.findViewById(R.id.specNameEdit);
+        redact.setOnClickListener(select_img_lstnr);
+        erase.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                specialist.setAvatarUri(null);
+                MainActivity.getInstance().getViewModel().getSpecialistRepository().savePerson(null);
+            }
+        });
+        nameEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new EditNameDialog(getContext()).setOnValuesSetListener(
+                        new EditNameDialog.OnValuesSetListener() {
+                            @Override
+                            public void onValuesSet(final String fName, final String sName, final String surName) {
+                                MainActivity.getInstance().getViewModel().getSpecialist().observe(
+                                        getViewLifecycleOwner(), new Observer<Specialist>() {
+                                            @Override
+                                            public void onChanged(Specialist specialist) {
+                                                specialist.fName = fName;
+                                                specialist.sName = sName;
+                                                specialist.surName = surName;
+                                                MainActivity.getInstance().getViewModel().getUserRepository().savePerson(null);
+                                            }
+                                        });
+                            }
+                        });
+            }
+        });
 
         viewModel.getSpecialist().observe(this.getViewLifecycleOwner(), new Observer<Specialist>() {
             @Override
@@ -85,8 +119,6 @@ public class SpecialistHomeFragment extends Fragment {
                 else avaView.setImageResource(R.drawable.ic_user_default); // default image
             }
         });
-
-        avaView.setOnClickListener(select_img_lstnr);
     }
 
     @Override
