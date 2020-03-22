@@ -241,6 +241,7 @@ public class ShowSpecialistFragment extends Fragment {
                         listener.onDateSet(dateTime);
                     }
                 }, mYear, mMonth, mDay);
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
         datePickerDialog.show();
     }
 

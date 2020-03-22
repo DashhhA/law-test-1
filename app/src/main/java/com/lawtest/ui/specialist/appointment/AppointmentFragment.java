@@ -99,7 +99,8 @@ public class AppointmentFragment extends Fragment {
                         if (appointmentData.ava == null) avaView.setImageResource(R.drawable.ic_user_default);
                         else avaView.setImageURI(appointmentData.ava);
                         String services = builder.substring(0,builder.length()-2);
-                        String desc = String.format(getString(R.string.appointment_desc),
+                        String desc = String.format(
+                                MainActivity.getInstance().getString(R.string.appointment_desc),
                                 services,
                                 appointment.dateTime.hour, appointment.dateTime.minute,
                                 appointment.dateTime.day, appointment.dateTime.month, appointment.dateTime.year

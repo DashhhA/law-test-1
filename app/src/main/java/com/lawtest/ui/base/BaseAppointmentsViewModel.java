@@ -4,6 +4,7 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
@@ -29,18 +30,20 @@ import java.util.Map;
 
 public class BaseAppointmentsViewModel extends ViewModel {
     private ArrayList<Appointment> appointments;
-    private MutableLiveData<ArrayList<Appointment>> data;
+    private MediatorLiveData<ArrayList<Appointment>> data;
     private Map<Appointment, LiveData<AppointmentData>> map;
     private Appointment current;
     private Class tClass;
+    LiveData<BasePerson> person;
 
     public BaseAppointmentsViewModel(LiveData<BasePerson> person, Class tClass) {
         appointments = new ArrayList<>();
-        data = new MutableLiveData<>();
+        data = new MediatorLiveData<>();
         map = new HashMap<>();
         this.tClass = tClass;
+        this.person = person;
 
-        person.observeForever(new Observer<BasePerson>() {
+        data.addSource(person, new Observer<BasePerson>() {
             @Override
             public void onChanged(BasePerson person) {
                 final ArrayList<Appointment> appointmentsNew = new ArrayList<>();
