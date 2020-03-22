@@ -27,6 +27,7 @@ public class ReviewsViewModel extends ViewModel {
                 new Observer<Specialist>() {
             @Override
             public void onChanged(Specialist specialist) {
+                if (specialist.reviews == null) return; // dont continue, if there is no reviews
                 final ArrayList<ReviewForList> reviews = new ArrayList<>();
                 MultiTaskCompleteWatcher reviewsWatcher = new MultiTaskCompleteWatcher() {
                     @Override
