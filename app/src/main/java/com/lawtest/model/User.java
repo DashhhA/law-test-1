@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+// модель пользователя
 public class User extends BasePerson{
     public final static String TAG = "user";
     public final static String DATABASE_TAG = "users";

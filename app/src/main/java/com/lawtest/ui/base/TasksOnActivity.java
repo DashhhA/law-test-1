@@ -2,6 +2,7 @@ package com.lawtest.ui.base;
 
 import java.util.ArrayList;
 
+// класс, нужный для вызова методов в OnCreateView
 public class TasksOnActivity {
 
     private ArrayList<task> tasks = new ArrayList<>();

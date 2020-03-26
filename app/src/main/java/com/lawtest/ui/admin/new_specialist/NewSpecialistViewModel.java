@@ -16,6 +16,7 @@ import com.lawtest.model.AgencyService;
 import java.util.ArrayList;
 import java.util.Map;
 
+// класс содержащий данные введенные пользователем и список услуг
 public class NewSpecialistViewModel extends ViewModel {
     private String fName;
     private String sName;
@@ -25,6 +26,7 @@ public class NewSpecialistViewModel extends ViewModel {
     private DatabaseReference database;
     private FirebaseAuth auth;
 
+    // отслеживание изменений списка услуг
     private ValueEventListener servicesEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

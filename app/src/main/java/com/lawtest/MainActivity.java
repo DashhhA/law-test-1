@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.lawtest.ui.login.LogInActivity;
 
+// MainActivity, есть все время жизни приложения, предоставляет доступ к основной ViewModel
 public class MainActivity extends AppCompatActivity {
 
     private static MainActivity instance;
@@ -26,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         instance = this;
 
-        //userRepository = new UserRepository(auth, database, storage);
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         // запускает активити входа

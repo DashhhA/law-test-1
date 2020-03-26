@@ -27,13 +27,14 @@ import com.lawtest.ui.login.LogInActivity;
 
 import static android.app.Activity.RESULT_OK;
 
+// "личный кабинет" специалиста
 public class SpecialistHomeFragment extends Fragment {
     public static final int PICK_IMAGE = 1;
     public static final int CROP_IMAGE = 2;
     private SpecialistHomeViewModel viewModel;
     private ImageView avaView;
     private Specialist specialist;
-    // обработчик нажатия на изображение, стартующий активити для выбора изобрадения из галереи
+    // обработчик нажатия на копку, стартующий активити для выбора изобрадения из галереи
     private View.OnClickListener select_img_lstnr = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -64,6 +65,7 @@ public class SpecialistHomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // получение ссылок на элементы интерфейса
         avaView = view.findViewById(R.id.specAvatarEditView);
         final TextView nameText = view.findViewById(R.id.specName);
         final TextView emailText = view.findViewById(R.id.specEmail);
@@ -75,6 +77,7 @@ public class SpecialistHomeFragment extends Fragment {
         erase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // замена аватарки на дефолтную и сохранение изменений
                 specialist.setAvatarUri(null);
                 MainActivity.getInstance().getViewModel().getSpecialistRepository().savePerson(null);
             }
@@ -82,6 +85,7 @@ public class SpecialistHomeFragment extends Fragment {
         nameEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // диалог с выбором новых ФИО
                 new EditNameDialog(getContext()).setOnValuesSetListener(
                         new EditNameDialog.OnValuesSetListener() {
                             @Override
@@ -101,6 +105,8 @@ public class SpecialistHomeFragment extends Fragment {
             }
         });
 
+        // получение данных о текущем специалисте и обновление элементов интерфейса в соответствии
+        // с полученной информацией
         viewModel.getSpecialist().observe(this.getViewLifecycleOwner(), new Observer<Specialist>() {
             @Override
             public void onChanged(Specialist specialist) {

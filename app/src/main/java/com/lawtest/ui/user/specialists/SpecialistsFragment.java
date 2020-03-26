@@ -20,6 +20,7 @@ import com.lawtest.model.SpecialistForList;
 
 import java.util.ArrayList;
 
+// фрагмент со списком специалистов
 public class SpecialistsFragment extends ListFragment {
 
     private SpecialistsViewModel viewModel;
@@ -29,6 +30,7 @@ public class SpecialistsFragment extends ListFragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+        // получение SpecialistsViewModel, связанной с UserActivity
         viewModel = new ViewModelProvider(requireActivity()).get(SpecialistsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_user_specialists, container, false);
 
@@ -39,7 +41,11 @@ public class SpecialistsFragment extends ListFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        // инициализация ListAdapter и передача его в ListView
         final SpecialistsListAdapter adapter = new SpecialistsListAdapter(this.getActivity());
+        setListAdapter(adapter);
+
+        // "подписка" на изменения в списке списке специалистов и обновление ListAdapter в соответствии с ним
         viewModel.getSpecialists().observe(getViewLifecycleOwner(),
                 new Observer<ArrayList<SpecialistForList>>() {
                     @Override
@@ -47,11 +53,13 @@ public class SpecialistsFragment extends ListFragment {
                         adapter.updateSpecialists(specialist);
                     }
                 });
-        setListAdapter(adapter);
+
+        // по нажатию на элемент списка
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                viewModel.setPosition(position);
+                viewModel.setPosition(position); // сохранение выбранной позиции в ViewModel
+                // переход на фрагмент, показывающий специалиста
                 Navigation.findNavController(view).navigate(
                         R.id.action_nav_specialists_to_showSpecialistFragment
                 );

@@ -5,6 +5,7 @@ import android.app.Activity;
 import com.lawtest.model.SpecialistForList;
 import com.lawtest.ui.base.BaseSpecialistListAdapter;
 
+// ListAdapter для списка специалистов, наследник базового
 public class NewAppointmentSpecListAdapter extends BaseSpecialistListAdapter {
 
     public NewAppointmentSpecListAdapter(Activity context) {

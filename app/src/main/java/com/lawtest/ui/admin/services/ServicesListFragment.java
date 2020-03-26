@@ -24,11 +24,12 @@ import com.lawtest.ui.base.task;
 
 import java.util.ArrayList;
 
+// фрагмент со списком услуг
 public class ServicesListFragment extends ListFragment {
 
     private ServicesListViewModel viewModel;
     private AdminActivity activity;
-    private TasksOnActivity tasks = new TasksOnActivity();
+    private TasksOnActivity tasks = new TasksOnActivity(); // задачи, которые будут выполнены в onCreateView
     private ServicesListAdapter adapter;
 
     @Nullable
@@ -37,7 +38,7 @@ public class ServicesListFragment extends ListFragment {
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         viewModel = new ViewModelProvider(requireActivity()).get(ServicesListViewModel.class);
         activity = (AdminActivity) requireActivity();
-        tasks.applyTasks();
+        tasks.applyTasks(); // исполнение отложенных задач
         return inflater.inflate(R.layout.fragment_admin_services_list, container, false);
     }
 
@@ -45,9 +46,11 @@ public class ServicesListFragment extends ListFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // установка ListAdapter
         adapter = new ServicesListAdapter(getActivity());
         setListAdapter(adapter);
 
+        // получение данных об изменениях списка услуг и обновление ListView
         viewModel.getServices().observe(this.getViewLifecycleOwner(), new Observer<ArrayList<AgencyService>>() {
             @Override
             public void onChanged(ArrayList<AgencyService> agencyServices) {
@@ -58,6 +61,7 @@ public class ServicesListFragment extends ListFragment {
         });
     }
 
+    // при нажатии на строку списка вызывает активити, визуалазирующее услугу
     @Override
     public void onListItemClick(@NonNull ListView l, @NonNull View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
@@ -70,7 +74,9 @@ public class ServicesListFragment extends ListFragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
+            // выполняется когда пользователь видит фрагмент
             if (activity == null) {
+                // если фрагмент еще не привязан к активити
                 tasks.addTask(new task() {
                     @Override
                     public void apply() {

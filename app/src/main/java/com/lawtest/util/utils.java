@@ -50,6 +50,7 @@ public class utils {
         return Uri.parse(filePath.toString());
     }
 
+    // сохранение byte[] на диск
     public static void saveBytesToFile(Uri dest, byte[] source) {
 
         String path = dest.getPath();
@@ -62,10 +63,10 @@ public class utils {
             fos = new FileOutputStream(filePath, false);
             fos.write(source);
         } catch (FileNotFoundException e) {
-            new String();
+
             // TODO
         } catch (IOException e) {
-            new String();
+
             // TODO
         } finally {
             try {
@@ -163,6 +164,7 @@ public class utils {
         return bytes;
     }
 
+    // преобразование email в формат, который может быть ключем в firebase
     public static String emailForDatabase(String email){
         return email.replaceAll("\\.", "_dot_");
     }

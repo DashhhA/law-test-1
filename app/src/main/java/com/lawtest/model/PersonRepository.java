@@ -30,13 +30,16 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+// репозиторий, отвечающий за получение данных по пользователю или специалисту из
+// локального и удаленного репозиториев, а также из синхронизацию
 public class PersonRepository<T extends BasePerson> {
     public final static String EMAIL_TO_SALT_TAG = "emailToSalt";
 
-    private MutableLiveData<T> data;
-    private T localPerson;
-    private Class<T> tClass;
+    private MutableLiveData<T> data; // LiveData, через которую можно будет получить данные
+    private T localPerson; // "актуальное" состояние модели
+    private Class<T> tClass; // класс, с которым работает репозиторий
 
+    // переменные firebase
     private FirebaseAuth auth;
     private DatabaseReference database;
     private StorageReference storage;
@@ -55,6 +58,7 @@ public class PersonRepository<T extends BasePerson> {
         data = new MutableLiveData<>();
     }
 
+    // возвращает LiveData для отслеживания изменений модели.
     public LiveData<T> getPerson(String email, final String password) {
         MultiTaskCompleteWatcher watcher = new MultiTaskCompleteWatcher() {
             @Override
@@ -105,6 +109,7 @@ public class PersonRepository<T extends BasePerson> {
         return data;
     }
 
+    // регистрация нового пользователя и сохранение его в обоих бд
     public void newPerson(final T person, final StateListener listener) {
         MultiTaskCompleteWatcher watcher = new MultiTaskCompleteWatcher() {
             @Override
@@ -126,6 +131,7 @@ public class PersonRepository<T extends BasePerson> {
         webService.newPerson(person, webTask);
     }
 
+    // сохранение изменений в localPerson
     public void savePerson(final StateListener listener) {
         MultiTaskCompleteWatcher watcher = new MultiTaskCompleteWatcher() {
             @Override
@@ -151,6 +157,7 @@ public class PersonRepository<T extends BasePerson> {
         void onFailed(Exception exception);
     }
 
+    // класс, работающий с локатьными данными
     private class PersonLocalService {
         void getPerson(String email, String pass, OnPersonResolvedListener listener) {
             T person = utils.getPersonFromPrefs(getTag(tClass), tClass);
@@ -203,6 +210,7 @@ public class PersonRepository<T extends BasePerson> {
         }
     }
 
+    // класс, работающий с данными на сервере
     private class PersonWebService {
         private byte[] salt;
         void getPerson(final String email, final String pass, final OnPersonResolvedListener listener) {
@@ -221,6 +229,7 @@ public class PersonRepository<T extends BasePerson> {
                     .addOnCompleteListener( new PutPersonImpl(person, task));
         }
 
+        // авторизация по паролю и почте, затем вызов переданного коллбака
         void authorise(final String email, final String password,
                        final OnCompleteListener<AuthResult> completeListener,
                        @Nullable final OnPersonResolvedListener listener) {
@@ -231,6 +240,7 @@ public class PersonRepository<T extends BasePerson> {
                     ArrayList<Integer> list = dataSnapshot.getValue(typeIndicator);
                     salt = utils.arrayToBytes(list);
 
+                    // с помощью соли можно проверить подлинность пароля
                     auth.signInWithEmailAndPassword(email, crypto.getPassBySalt(password, salt))
                             .addOnCompleteListener( completeListener );
                 }
@@ -241,6 +251,7 @@ public class PersonRepository<T extends BasePerson> {
                 }
             };
 
+            // получение соли по email
             database
                     .child(EMAIL_TO_SALT_TAG)
                     .child(utils.emailForDatabase(email))
@@ -248,6 +259,7 @@ public class PersonRepository<T extends BasePerson> {
         }
     }
 
+    // после авторизации получает данные пользователя
     class GetSignedInPersonImpl implements OnCompleteListener<AuthResult> {
         private OnPersonResolvedListener listener;
         private T person;
@@ -259,6 +271,7 @@ public class PersonRepository<T extends BasePerson> {
         private OnCompleteListener<byte []> avatarListener = new OnCompleteListener<byte[]>() {
             @Override
             public void onComplete(@NonNull Task<byte[]> task) {
+                // получение и сохранение аватарки
                 if (task.isSuccessful()) {
                     utils.saveBytesToFile(person.getAvatarUri(), task.getResult());
                     listener.onResolved(person);
@@ -271,6 +284,7 @@ public class PersonRepository<T extends BasePerson> {
         private ValueEventListener personEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // получаем результат запроса как Map и инициализируем поьзователя
                 GenericTypeIndicator<Map<String, Object>> typeIndicator =
                         new GenericTypeIndicator<Map<String, Object> >() {};
                 Map<String, Object> map = dataSnapshot.getValue(typeIndicator);
@@ -280,6 +294,7 @@ public class PersonRepository<T extends BasePerson> {
                 } catch (Exception e) {
                     // TODO
                 }
+                // если есть аватарка получаем ее
                 if (person != null && person.getAvatarUri() != null) {
                     storage.child(getDatabaseAvaFolder(tClass))
                             .child(person.getAvatarUri().getLastPathSegment())
@@ -300,6 +315,7 @@ public class PersonRepository<T extends BasePerson> {
         public void onComplete(@NonNull Task<AuthResult> task) {
             if (task.isSuccessful()) {
 
+                // получаем id пользователя и по нему получаем данные в бд
                 String user_uid = auth.getCurrentUser().getUid();
                 database
                         .child(getDatabaseTag(tClass))
@@ -312,6 +328,7 @@ public class PersonRepository<T extends BasePerson> {
         }
     }
 
+    // загружает данные пользователя на сервер
     private class PutPersonImpl implements OnCompleteListener<AuthResult> {
         private T person;
         private MultiTaskCompleteWatcher.Task task;
@@ -386,6 +403,7 @@ public class PersonRepository<T extends BasePerson> {
         }
     }
 
+    // синхронизация бд
     private OnCompleteListener<AuthResult> onAuthorised = new OnCompleteListener<AuthResult>() {
 
         private OnCompleteListener<byte []> avatarListener = new OnCompleteListener<byte[]>() {
@@ -407,6 +425,7 @@ public class PersonRepository<T extends BasePerson> {
                 GenericTypeIndicator<Map<String, Object> > typeIndicator =
                         new GenericTypeIndicator<Map<String, Object> >() {};
                 Map<String, Object> map = dataSnapshot.getValue(typeIndicator);
+                // добавилась ли аватарка
                 boolean addAvaListener =
                         dataSnapshot.hasChild("avatarUri") &&
                         localPerson != null &&
@@ -448,6 +467,7 @@ public class PersonRepository<T extends BasePerson> {
         @Override
         public void onComplete(@NonNull Task<AuthResult> task) {
             if (task.isSuccessful()) {
+                // "подписка" на изменения пользователя в бд
                 String user_uid = auth.getCurrentUser().getUid();
                 database
                         .child(getDatabaseTag(tClass))

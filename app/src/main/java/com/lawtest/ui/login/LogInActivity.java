@@ -23,6 +23,7 @@ import com.lawtest.ui.new_user.NewUserActivity;
 import com.lawtest.ui.specialist.SpecialistActivity;
 import com.lawtest.ui.user.UserActivity;
 
+// активити входа в приложение
 public class LogInActivity extends AppCompatActivity {
 
     private LogInViewModel viewModel;
@@ -60,19 +61,6 @@ public class LogInActivity extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*UserRepository repository;
-                repository = MainActivity.getInstance().getUserRepository();
-                repository.getUser(viewModel.getEmail(), password.getText().toString())
-                        .observe(LogInActivity.this, new Observer<User>() {
-                            @Override
-                            public void onChanged(User user) {
-                                if (user != null) {
-                                    Intent intent = new Intent(LogInActivity.this, UserActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                }
-                            }
-                        });*/
                 final ProgressDialog progress = new ProgressDialog(LogInActivity.this);
                 progress.setMessage(getString(R.string.login_checking));
                 progress.show();
@@ -83,16 +71,17 @@ public class LogInActivity extends AppCompatActivity {
                     public void onSuccess(int type) {
                         progress.dismiss();
                         Intent intent;
+                        // запуск активити в зависимости от результатов авторизации
                         switch (type) {
                             case AuthIdentifier.USER:
                                 MainActivity.getInstance().getViewModel()
-                                        .authUser(viewModel.getEmail(), password.getText().toString());
+                                        .authUser(viewModel.getEmail(), password.getText().toString());         // сответствующая авторизация в основной ViewModel
                                 intent = new Intent(LogInActivity.this, UserActivity.class);
                                 startActivity(intent);
                                 break;
                             case AuthIdentifier.SPECIALIST:
                                 MainActivity.getInstance().getViewModel()
-                                        .authSpecialist(viewModel.getEmail(), password.getText().toString());
+                                        .authSpecialist(viewModel.getEmail(), password.getText().toString());   // сответствующая авторизация в основной ViewModel
                                 intent = new Intent(LogInActivity.this, SpecialistActivity.class);
                                 startActivity(intent);
                                 break;

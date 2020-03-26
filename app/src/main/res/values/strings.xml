@@ -58,6 +58,7 @@
     <string name="admin_services_title">services</string>
     <string name="show_service_title">Service</string>
     <string name="show_service_name_empty">Service name should not be empty</string>
+    <string name="show_service_desc_empty">Service description should not be empty</string>
 
     <!-- new specialist -->
     <string name="new_specialist_title">New specialist account</string>

@@ -7,6 +7,7 @@ import com.lawtest.MainActivity;
 import com.lawtest.model.PersonRepository;
 import com.lawtest.model.Specialist;
 
+// позволяет получить данные по текщему специалисту
 public class SpecialistViewModel extends ViewModel {
 
     public SpecialistViewModel(){

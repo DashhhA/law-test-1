@@ -38,6 +38,7 @@ import com.lawtest.util.MultiTaskCompleteWatcher;
 import java.util.HashMap;
 import java.util.Map;
 
+// фрагмент, визуализирующий всречу, и предоставляющий соответствующий функционал
 public class AppointmentFragment extends Fragment {
     private BaseAppointmentsViewModel viewModel;
     private Appointment appointment;
@@ -46,11 +47,12 @@ public class AppointmentFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+        // получение view и ViewModel
         View root = inflater.inflate(R.layout.fragment_specialist_appointment, container, false);
         viewModel = new ViewModelProvider(requireActivity(),
                 new BaseAppointmentsViewModelFactory(MainActivity.getInstance().getViewModel().getSpecialist(), User.class)
         ).get(BaseAppointmentsViewModel.class);
-        appointment = viewModel.getCurrent();
+        appointment = viewModel.getCurrent();   // выбранная встреча, сохраненная во ViewModel
 
         return root;
     }
@@ -59,6 +61,7 @@ public class AppointmentFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // получение ссылок на элементы интерфейса
         final ImageView avaView = view.findViewById(R.id.specUserAvaView);
         final TextView userName = view.findViewById(R.id.specUserName);
         final TextView userEmail = view.findViewById(R.id.specUserEmail);
@@ -72,22 +75,27 @@ public class AppointmentFragment extends Fragment {
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // показ диалога с предложением прокомментировать решение
                 getSpecialistComment(Appointment.STATUS_ACCEPTED);
             }
         });
         decline.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // показ диалога с предложением прокомментировать решение
                 getSpecialistComment(Appointment.STATUS_REJECTED);
             }
         });
 
+        // прогресс загрузки с уведомлением
         final ProgressDialog progress = new ProgressDialog(this.getContext());
         progress.setMessage(getString(R.string.appointment_loading));
         progress.show();
 
+        // StringBuilder, в который будут присоединятся названия услуг
         final StringBuilder builder = new StringBuilder();
 
+        // получение полных AppointmentForList по Appointment и "подписка" на ее изменение
         viewModel.getByAppointment(viewModel.getCurrent()).observe(this.getViewLifecycleOwner(),
                 new Observer<BaseAppointmentsViewModel.AppointmentData>() {
             @Override
@@ -96,6 +104,7 @@ public class AppointmentFragment extends Fragment {
                 MultiTaskCompleteWatcher watcher = new MultiTaskCompleteWatcher() {
                     @Override
                     public void allComplete() {
+                        // заполнение элементов интерфейса по получении всех данных
                         if (appointmentData.ava == null) avaView.setImageResource(R.drawable.ic_user_default);
                         else avaView.setImageURI(appointmentData.ava);
                         String services = builder.substring(0,builder.length()-2);
@@ -145,6 +154,7 @@ public class AppointmentFragment extends Fragment {
 
                 final MultiTaskCompleteWatcher.Task userTask = watcher.newTask();
 
+                // получение данных пользователя
                 MainActivity.getInstance().getViewModel().getDatabase()
                         .child(User.DATABASE_TAG)
                         .child(appointment.userId)
@@ -176,6 +186,7 @@ public class AppointmentFragment extends Fragment {
                             }
                         });
 
+                // получение услуг, требуемых пользователем
                 for (String serviceId: appointment.ServiceIds) {
                     final MultiTaskCompleteWatcher.Task task = watcher.newTask();
 
@@ -200,6 +211,7 @@ public class AppointmentFragment extends Fragment {
         });
     }
 
+    // сохраняет изменение статуса заявки
     private void changeStatus(String status, String specialistComment) {
         Appointment appointment = viewModel.getCurrent();
         final SpinnerProgress progress = new SpinnerProgress(this.getContext());
@@ -229,6 +241,7 @@ public class AppointmentFragment extends Fragment {
                 });
     }
 
+    // показывает диалог с предложением оставить комментприй
     private void getSpecialistComment(final String status) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
         builder.setTitle(R.string.appointment_add_comment);

@@ -17,14 +17,18 @@ import com.lawtest.model.ReviewForList;
 
 import java.util.ArrayList;
 
+// класс, визуализирующий строки в list view. Общий для всех списков, визуализирующих отзывы
 public class BaseReviewListAdapter extends ArrayAdapter<ReviewForList> {
     private FragmentActivity activity;
 
+    // subclass содержащий ссылки на элементы интерфейса в строке. Здесь, в отличие от стандартной
+    // схемы ViewHolder сам следит за изменениями своих элементров и заполняет их.
     private class ViewHolder {
         ImageView image;
         TextView name;
         TextView body;
 
+        // в конструктор передаются ссылки, на элементы интерфейса в строке
         ViewHolder(
                 ImageView image,
                 TextView name,
@@ -34,6 +38,7 @@ public class BaseReviewListAdapter extends ArrayAdapter<ReviewForList> {
             this.image = image;
             this.name = name;
             this.body = body;
+            // коллбак на изменения с сервера для получения данных и заполнения элементов интерфейса
             review.getReview().observe(activity, new Observer<ReviewForList>() {
                 @Override
                 public void onChanged(ReviewForList review) {
@@ -59,6 +64,7 @@ public class BaseReviewListAdapter extends ArrayAdapter<ReviewForList> {
         View rowView = convertView;
         if (rowView == null) {
             LayoutInflater inflater = activity.getLayoutInflater();
+            // получение view строки и инициализация ViewHolder
             rowView = inflater.inflate(R.layout.review_list_row, null, true);
             holder = new ViewHolder(
                     (ImageView) rowView.findViewById(R.id.review_row_ava),
@@ -72,6 +78,7 @@ public class BaseReviewListAdapter extends ArrayAdapter<ReviewForList> {
         return rowView;
     }
 
+    // обновление списка отзывов по переданному списку
     public void updateReviews(ArrayList<ReviewForList> reviews) {
         clear();
         addAll(reviews);

@@ -16,10 +16,13 @@ import com.lawtest.R;
 import com.lawtest.ui.admin.new_service.NewServiceActivity;
 import com.lawtest.ui.admin.new_specialist.NewSpecialistActivity;
 
+// основное ативити админа, осуществляющее контроль за показываемыми фрагментами и fab
 public class AdminActivity extends AppCompatActivity {
 
-    private FloatingActionButton fabSpec;
-    private FloatingActionButton fabService;
+    private FloatingActionButton fabSpec;       // fab "добавить специалиста"
+    private FloatingActionButton fabService;    // fab "добавить услугу"
+
+    // ункции, показывающие и прячущие соответствующие fab с анимацией
 
     public void hideSpec(){
         if ( fabSpec.isClickable() ) {
@@ -69,6 +72,7 @@ public class AdminActivity extends AppCompatActivity {
         ActionBar ab = getSupportActionBar();
         ab.setDisplayShowTitleEnabled(false);
 
+        // настройка fab с соответствующими OnClickListener
         fabSpec = findViewById(R.id.adminFAB);
         fabSpec.setClickable(true);
         fabSpec.setOnClickListener(new View.OnClickListener() {

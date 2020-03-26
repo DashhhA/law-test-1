@@ -31,6 +31,7 @@ import com.lawtest.util.MultiTaskCompleteWatcher;
 
 import java.util.Map;
 
+// фрагмент с информацией о встрече
 public class AppointmentInfoFragment extends Fragment {
     private Appointment appointment;
     BaseAppointmentsViewModel viewModel;
@@ -40,10 +41,11 @@ public class AppointmentInfoFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_user_appointment, container, false);
+        // получение ViewModel для списка встречь, привязянного к UserActivity
         viewModel = new ViewModelProvider(requireActivity(),
                 new BaseAppointmentsViewModelFactory(MainActivity.getInstance().getViewModel().getUser(), Specialist.class)
         ).get(BaseAppointmentsViewModel.class);
-        appointment = viewModel.getCurrent();
+        appointment = viewModel.getCurrent();   // полусение выбранной встречи
 
         return root;
     }
@@ -52,6 +54,7 @@ public class AppointmentInfoFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // получение ссылок на элементы gui
         final ImageView avaView = view.findViewById(R.id.userSpecAvaView);
         final TextView userName = view.findViewById(R.id.userSpecName);
         final TextView userEmail = view.findViewById(R.id.userSpecEmail);
@@ -62,12 +65,15 @@ public class AppointmentInfoFragment extends Fragment {
         specComment.setVisibility(View.INVISIBLE);
         comment.setVisibility(View.INVISIBLE);
 
+        // прогресс загрузки с уведомлением
         final ProgressDialog progress = new ProgressDialog(this.getContext());
         progress.setMessage(getString(R.string.appointment_loading));
         progress.show();
 
+        // StringBuilder, в который будут присоединятся названия услуг
         final StringBuilder builder = new StringBuilder();
 
+        // получение полных AppointmentForList по Appointment и "подписка" на ее изменение
         viewModel.getByAppointment(viewModel.getCurrent()).observe(this.getViewLifecycleOwner(),
                 new Observer<BaseAppointmentsViewModel.AppointmentData>() {
                     @Override
@@ -76,6 +82,7 @@ public class AppointmentInfoFragment extends Fragment {
                         MultiTaskCompleteWatcher watcher = new MultiTaskCompleteWatcher() {
                             @Override
                             public void allComplete() {
+                                // заполнение элементов интерфейса по получении всех данных
                                 if (appointmentData.ava == null) avaView.setImageResource(R.drawable.ic_user_default);
                                 else avaView.setImageURI(appointmentData.ava);
                                 String services = builder.substring(0,builder.length()-2);
@@ -115,6 +122,7 @@ public class AppointmentInfoFragment extends Fragment {
 
                         final MultiTaskCompleteWatcher.Task userTask = watcher.newTask();
 
+                        // получение данных специалиста
                         MainActivity.getInstance().getViewModel().getDatabase()
                                 .child(User.DATABASE_TAG)
                                 .child(appointment.userId)
@@ -146,6 +154,7 @@ public class AppointmentInfoFragment extends Fragment {
                                     }
                                 });
 
+                        // получение услуг, требуемых пользователем
                         for (String serviceId: appointment.ServiceIds) {
                             final MultiTaskCompleteWatcher.Task task = watcher.newTask();
 

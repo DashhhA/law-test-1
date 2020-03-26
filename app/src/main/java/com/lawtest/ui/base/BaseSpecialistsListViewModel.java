@@ -13,11 +13,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.lawtest.MainActivity;
 import com.lawtest.model.Specialist;
 import com.lawtest.model.SpecialistForList;
 
 import java.util.ArrayList;
 
+// ViewModel, позволяющая следить за списком специалистов на сервере
 public class BaseSpecialistsListViewModel extends ViewModel {
     private ArrayList<SpecialistForList> specialists;
     private StorageReference storage;
@@ -27,7 +29,7 @@ public class BaseSpecialistsListViewModel extends ViewModel {
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
             SpecialistForList specialist =
-                    new SpecialistForList(dataSnapshot, storage, dataSnapshot.getKey());
+                    new SpecialistForList(dataSnapshot, dataSnapshot.getKey());
             specialists.add(specialist);
             data.postValue(specialists);
         }
@@ -55,8 +57,8 @@ public class BaseSpecialistsListViewModel extends ViewModel {
     };
 
     public BaseSpecialistsListViewModel() {
-        database = FirebaseDatabase.getInstance().getReference();
-        storage = FirebaseStorage.getInstance().getReference();
+        database = MainActivity.getInstance().getViewModel().getDatabase();
+        storage = MainActivity.getInstance().getViewModel().getStorage();
         specialists = new ArrayList<>();
         data = new MutableLiveData<>();
 

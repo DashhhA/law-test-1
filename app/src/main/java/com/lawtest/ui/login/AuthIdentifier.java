@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 import static com.lawtest.model.PersonRepository.EMAIL_TO_SALT_TAG;
 
+// класс, получающий информацию, к специалисту, пользователю или админу относятся почта с паролем
 public class AuthIdentifier {
     public static final int USER = 0;
     public static final int SPECIALIST = 1;
@@ -32,6 +33,7 @@ public class AuthIdentifier {
     private String email;
     private String password;
 
+    // listener, получающий результаты авторизации и содержащий соответствующие значения
     private class ChildExistsListener implements ValueEventListener{
 
         private String key;
@@ -56,6 +58,7 @@ public class AuthIdentifier {
         }
     }
 
+    // при успешной авторизации...
     private class AuthListener implements OnCompleteListener<AuthResult> {
         private MultipleAuthCheckListener multipleAuthCheckListener;
         private OnAnswer answer;
@@ -92,6 +95,8 @@ public class AuthIdentifier {
         }
     }
 
+    // класс, следящий за тем, какие попытки авторизации успешны, и делающий вывод,
+    // как прошла авторизация
     private class MultipleAuthCheckListener {
         private OnAnswer answer;
         private ArrayList<Integer> failedKeys;
@@ -118,6 +123,7 @@ public class AuthIdentifier {
         }
     }
 
+    // интерфейс, нужный для получения результатов авторизации
     public interface OnAnswer {
         void onSuccess(int type);
         void onFailure(Exception e);
@@ -158,6 +164,7 @@ public class AuthIdentifier {
                         if (list != null) {
                             final byte[] salt = utils.arrayToBytes(list);
 
+                            // попытка авторизации, если удалось получить соль
                             auth.signInWithEmailAndPassword(email, crypto.getPassBySalt(password, salt))
                                     .addOnCompleteListener(new AuthListener(answer));
                         } else {

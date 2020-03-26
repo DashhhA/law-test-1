@@ -19,9 +19,11 @@ import com.lawtest.model.SpecialistForList;
 
 import java.util.ArrayList;
 
+// класс, визуализирующий строки в list view. Общий для всех списков, визуализирующих специалистов
 public abstract class BaseSpecialistListAdapter extends ArrayAdapter<SpecialistForList> {
     private Activity context;
 
+    // класс, содержащий ссылки на элементы итерфейса
     static class ViewHolder {
         ImageView image;
         TextView name;
@@ -35,12 +37,15 @@ public abstract class BaseSpecialistListAdapter extends ArrayAdapter<SpecialistF
         this.context = context;
     }
 
+    // метод, вызывающийся при нажатии на кнопку в строке
     public abstract void onButtonClicked(SpecialistForList specialist);
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         final ViewHolder holder;
 
+        // если строка не была сохранена в convertView, создается новый ViewHolder и сохраняется
+        // в rowView. Иначе ViewHolder берется из rowView.
         View rowView = convertView;
         if (rowView == null) {
             LayoutInflater inflater = context.getLayoutInflater();
@@ -55,6 +60,8 @@ public abstract class BaseSpecialistListAdapter extends ArrayAdapter<SpecialistF
             holder = (ViewHolder) rowView.getTag();
         }
 
+        // подписка на изменения специалиста и заполнение элементов интерфейса при изменении
+        // значенией
         final SpecialistForList specialist = getItem(position);
         specialist.getSpecialist().observe((FragmentActivity)context, new Observer<SpecialistForList>() {
             @Override
@@ -76,6 +83,7 @@ public abstract class BaseSpecialistListAdapter extends ArrayAdapter<SpecialistF
         return rowView;
     }
 
+    // обновление ListView по переданному списку
     public void updateSpecialists( ArrayList<SpecialistForList> specialists ) {
         clear();
         addAll(specialists);

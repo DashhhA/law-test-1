@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.UUID;
 
+// фрагмент записи на встречу
 public class NewAppointmentFragment extends Fragment {
     private NewAppointmentViewModel viewModel;
     private ArrayList<SpecialistForList> specialists;
@@ -68,6 +69,7 @@ public class NewAppointmentFragment extends Fragment {
 
         final Spinner spinner = view.findViewById(R.id.newAppointmentSpinner);
 
+        // текст в spinner, предлагающий выбрать нужные услуги
         TextView textView = new TextView(this.getActivity());
         textView.setText(R.string.new_specialist_services);
         textView.setGravity(Gravity.CENTER);
@@ -76,9 +78,11 @@ public class NewAppointmentFragment extends Fragment {
         textView.setPadding(8, 0 ,0, 0);
         textView.setTextColor(Color.BLACK);
 
+        // инициализация spinner для выбора услуг и адаптера к нему
         arrayAdapter = new ServicesArrayAdapter(this.getActivity(), textView);
         spinner.setAdapter(arrayAdapter);
         spinner.setEnabled(!arrayAdapter.isEmpty());
+        // получение информации о доступных услугах и обновление ListAdapter в соответствии с ними
         viewModel.getServices().observe(this.getActivity(), new Observer<ArrayList<AgencyService>>() {
             @Override
             public void onChanged(ArrayList<AgencyService> agencyServices) {
@@ -91,9 +95,11 @@ public class NewAppointmentFragment extends Fragment {
             }
         });
 
+        // инициализация списка специалистов, доступных для выбранных услуг и ListAdapter для него
         final ListView listView = view.findViewById(R.id.specList);
         final NewAppointmentSpecListAdapter listAdapter = new NewAppointmentSpecListAdapter(this.getActivity());
         listView.setAdapter(listAdapter);
+        // наблюдение за изменениями списка всех специалистов на сервере
         viewModel.getSpecialists().observe(getViewLifecycleOwner(), new Observer<ArrayList<SpecialistForList>>() {
             @Override
             public void onChanged(ArrayList<SpecialistForList> specialist) {
@@ -101,14 +107,17 @@ public class NewAppointmentFragment extends Fragment {
             }
         });
 
+        // коллбак на изменение списка выбранных услуг
         arrayAdapter.addOnCheckedChangeListener(new ServicesArrayAdapter.mOnCheckedChangeListener() {
             @Override
             public void onChanged() {
+                // фильтрация специалистов в соответствии с выбранными услугами
                 ArrayList<SpecialistForList> filtered = filterByServices(arrayAdapter.getSelected());
                 listAdapter.updateSpecialists(filtered);
             }
         });
 
+        // запись к специалисту, выбранному из списка
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -117,6 +126,7 @@ public class NewAppointmentFragment extends Fragment {
         });
     }
 
+    // фильтрует специалистов по переданному списку услуг
     private ArrayList<SpecialistForList> filterByServices(ArrayList<AgencyService> services) {
         ArrayList<SpecialistForList> filtered = new ArrayList<>();
         ArrayList<String> serviceNames = new ArrayList<>();
@@ -131,7 +141,9 @@ public class NewAppointmentFragment extends Fragment {
         return filtered;
     }
 
+    // показ цепочки диалогов для создания встречи
     private void generateAppointment(final SpecialistForList specialist) {
+        // выбор даты
         datePicker(new mDateSetListener() {
             @Override
             public void onDateSet(Appointment.DateTime dateTime) {
@@ -140,6 +152,7 @@ public class NewAppointmentFragment extends Fragment {
         });
     }
 
+    // получение информации о выборе пользователя
     private void getAppointmentData(final SpecialistForList specialist, final Appointment.DateTime day) {
         final ArrayList<Appointment.DateTime> available = Appointment.getAvailableOnDay(day);
         if (specialist.appointments.isEmpty()) {
@@ -147,6 +160,7 @@ public class NewAppointmentFragment extends Fragment {
             return;
         }
 
+        // сообщение о загрузки доступных времен
         final ProgressDialog progress = new ProgressDialog(this.getActivity());
         progress.setMessage(getString(R.string.appointment_loading_time));
         progress.show();
@@ -155,6 +169,7 @@ public class NewAppointmentFragment extends Fragment {
         MultiTaskCompleteWatcher occupiedWatcher = new MultiTaskCompleteWatcher() {
             @Override
             public void allComplete() {
+                // удаление из списка доступных времен занятые
                 for ( Appointment.DateTime unavailableTime: occupied ) {
                     if (    unavailableTime.year >= day.year &&
                             unavailableTime.month >= day.month &&
@@ -182,15 +197,17 @@ public class NewAppointmentFragment extends Fragment {
             }
         };
 
-        getOccupiedTimes(occupied, specialist, occupiedWatcher);
+        getOccupiedTimes(occupied, specialist, occupiedWatcher); // получение занятых времен
     }
 
+    // диалог, позволяющий выбрать время и добавить комментарий
     private void getTimeAndComment(final SpecialistForList specialist, ArrayList<Appointment.DateTime> available) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
         View view = LayoutInflater.from(this.getContext()).inflate(R.layout.dialog_appointment,null);
         final EditText text = view.findViewById(R.id.dialogAppointmentComment);
         builder.setView(view);
 
+        // элементы списка доступных времен
         String[] times = new String[available.size()];
         int i = 0;
         for (Appointment.DateTime dateTime: available) {
@@ -198,6 +215,7 @@ public class NewAppointmentFragment extends Fragment {
             i++;
         }
 
+        // инициализация spinner со списком доступныз времен
         final Appointment.DateTime selectedTime = available.get(0);
         final ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getActivity(),
                 android.R.layout.simple_list_item_1, times);
@@ -206,6 +224,7 @@ public class NewAppointmentFragment extends Fragment {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // получение выбранного времени
                 String selected = adapter.getItem(position);
                 selectedTime.hour = Integer.parseInt(selected.substring(0,2));
                 selectedTime.minute = Integer.parseInt(selected.substring(3));
@@ -224,6 +243,7 @@ public class NewAppointmentFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 String servicesNames = "[";
 
+                // заполнение данных модели встречи
                 final Appointment appointment = new Appointment();
                 appointment.dateTime = selectedTime;
                 appointment.status = Appointment.STATUS_SENT;
@@ -242,6 +262,7 @@ public class NewAppointmentFragment extends Fragment {
                 final ProgressDialog progress = new ProgressDialog(NewAppointmentFragment.this.getContext());
                 progress.setMessage(getString(R.string.progress_loading_appointment));
 
+                // уведомление об успехе/провале регистрации встречи
                 final MultiTaskCompleteWatcher appointmentWatcher = new MultiTaskCompleteWatcher() {
                     @Override
                     public void allComplete() {
@@ -289,11 +310,13 @@ public class NewAppointmentFragment extends Fragment {
         builder.create().show();
     }
 
+    // получает времена, недоступные для записи
     private void getOccupiedTimes(final ArrayList<Appointment.DateTime> occupied,
                                   SpecialistForList specialist,
                                   MultiTaskCompleteWatcher watcher
     ) {
         occupied.clear();
+        // запрос ко всем записям к специалиста
         for ( String appointmentId: specialist.appointments ) {
             final MultiTaskCompleteWatcher.Task task = watcher.newTask();
             MainActivity.getInstance().getViewModel().getDatabase()
@@ -317,6 +340,7 @@ public class NewAppointmentFragment extends Fragment {
         }
     }
 
+    // диалог, позволяющий выббрать дату встречи
     private void datePicker(final mDateSetListener listener){
         final Appointment.DateTime dateTime = new Appointment.DateTime();
 

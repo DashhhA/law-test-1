@@ -11,6 +11,7 @@ import com.lawtest.MainViewModel;
 import com.lawtest.model.PersonRepository;
 import com.lawtest.model.Specialist;
 
+// ViewModel, предоставляющая доступ к данным о текущем специалисте
 public class SpecialistHomeViewModel extends ViewModel {
     private LiveData<Specialist> specialist;
 

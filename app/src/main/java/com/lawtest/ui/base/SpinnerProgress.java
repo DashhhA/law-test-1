@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import com.lawtest.R;
 
+// "крутящийся кружок" посреди экрана с прозрачным фоном
 public class SpinnerProgress extends ProgressDialog {
     public SpinnerProgress(Context context) {
         super(context);

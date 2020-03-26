@@ -17,10 +17,12 @@ import com.lawtest.model.Appointment;
 
 import java.util.ArrayList;
 
+// класс, визуализирующий строки в list view. Общий для всех списков, визуализирующих встречи
 public class BaseAppointmentsListAdapter extends ArrayAdapter<Appointment> {
     private FragmentActivity context;
     private BaseAppointmentsViewModel viewModel;
 
+    // класс, содержащий ссылки на элементы итерфейса
     static class ViewHolder {
         ImageView image;
         TextView name;
@@ -39,6 +41,8 @@ public class BaseAppointmentsListAdapter extends ArrayAdapter<Appointment> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         final ViewHolder holder;
 
+        // если строка не была сохранена в convertView, создается новый ViewHolder и сохраняется
+        // в rowView. Иначе ViewHolder берется из rowView.
         View rowView = convertView;
         if (rowView == null) {
             LayoutInflater inflater = context.getLayoutInflater();
@@ -54,6 +58,7 @@ public class BaseAppointmentsListAdapter extends ArrayAdapter<Appointment> {
         }
 
         final Appointment appointment = getItem(position);
+        // отслеживание изменений во встрече
         viewModel.getByAppointment(appointment).observe(context, new Observer<BaseAppointmentsViewModel.AppointmentData>() {
             @Override
             public void onChanged(BaseAppointmentsViewModel.AppointmentData appointmentData) {

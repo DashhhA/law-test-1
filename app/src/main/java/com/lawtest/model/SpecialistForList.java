@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+// класс, содержащий информацию, необходимую для визуализации специалиста в списке
 public class SpecialistForList{
     public String fName;
     public String sName;
@@ -38,6 +39,8 @@ public class SpecialistForList{
     private MutableLiveData<SpecialistForList> data;
     private StorageReference storage;
     public String key;
+
+    // загрузка и сохранение аватарки
     private OnCompleteListener<byte []> avatarListener = new OnCompleteListener<byte[]>() {
         @Override
         public void onComplete(@NonNull Task<byte[]> task) {
@@ -59,11 +62,12 @@ public class SpecialistForList{
         }
     };
 
-    public SpecialistForList(DataSnapshot dataSnapshot, StorageReference storage, String key) {
+    public SpecialistForList(DataSnapshot dataSnapshot, String key) {
         data = new MutableLiveData<>();
-        this.storage = storage;
+        this.storage = MainActivity.getInstance().getViewModel().getStorage();
         this.key = key;
         //initWithDataSnapshot(dataSnapshot);
+        // "подписка" на изменения специалиста
         dataSnapshot.getRef().addValueEventListener(databaseListener);
     }
 
@@ -80,6 +84,7 @@ public class SpecialistForList{
         return data;
     }
 
+    // получение данных
     private void initWithDataSnapshot(DataSnapshot dataSnapshot) {
         GenericTypeIndicator<Map<String, Object>> typeIndicator =
                 new GenericTypeIndicator<Map<String, Object>>() {};
@@ -109,12 +114,14 @@ public class SpecialistForList{
         return key;
     }
 
+    // добавление встречи
     public void addAppointment(final Appointment appointment, MultiTaskCompleteWatcher watcher) {
 
         final MultiTaskCompleteWatcher.Task databaseTask = watcher.newTask();
         final MultiTaskCompleteWatcher.Task userTask = watcher.newTask();
         final MultiTaskCompleteWatcher.Task specialistTask = watcher.newTask();
 
+        // добавление встречи в серверную бд
         DatabaseReference database = MainActivity.getInstance().getViewModel().getDatabase();
         database.child(Appointment.DATABASE_REF)
                 .child(appointment.id)
@@ -127,6 +134,7 @@ public class SpecialistForList{
                     }
                 });
 
+        // добавление id встречи в список встреч пользователя
         ArrayList<String> userAppointments = MainActivity.getInstance().getViewModel()
                 .getUserOnce().appointments;
         userAppointments.add(appointment.id);
@@ -142,6 +150,7 @@ public class SpecialistForList{
                     }
                 });
 
+        // добавление id встречи в список встреч специалиста
         appointments.add(appointment.id);
         database.child(Specialist.DATABASE_TAG)
                 .child(appointment.specialistId)
@@ -157,10 +166,12 @@ public class SpecialistForList{
 
     }
 
+    // добавление отзыва
     public void addReview(final Review review, MultiTaskCompleteWatcher watcher) {
         final MultiTaskCompleteWatcher.Task databaseTask = watcher.newTask();
         final MultiTaskCompleteWatcher.Task specialistTask = watcher.newTask();
 
+        // добавление отзыва в серверную бд
         String id = UUID.randomUUID().toString();
         MainActivity.getInstance().getViewModel().getDatabase()
                 .child(Review.DATABASE_REF)
@@ -174,6 +185,7 @@ public class SpecialistForList{
                     }
                 });
 
+        // добавление id отзыва в список отзывов специалиста
         reviews.add(id);
         MainActivity.getInstance().getViewModel().getDatabase()
                 .child(Specialist.DATABASE_TAG)

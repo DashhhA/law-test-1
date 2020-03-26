@@ -28,6 +28,7 @@ import com.lawtest.ui.base.EditNameDialog;
 
 import static android.app.Activity.RESULT_OK;
 
+// "личный кабинет" пользователя
 public class HomeFragment extends Fragment {
     public static final int PICK_IMAGE = 1;
     public static final int CROP_IMAGE = 2;
@@ -65,6 +66,7 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // получение ссылок на элементы интерфейса
         avaView = view.findViewById(R.id.userAvatarEditView);
         final TextView nameText = view.findViewById(R.id.userName);
         final TextView emailText = view.findViewById(R.id.userEmail);
@@ -75,6 +77,7 @@ public class HomeFragment extends Fragment {
         erase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // замена аватарки на дефолтную и сохранение изменений
                 user.setAvatarUri(null);
                 MainActivity.getInstance().getViewModel().getUserRepository().savePerson(null);
             }
@@ -82,6 +85,7 @@ public class HomeFragment extends Fragment {
         redactName .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // диалог с выбором новых ФИО
                 new EditNameDialog(getContext()).setOnValuesSetListener(
                         new EditNameDialog.OnValuesSetListener() {
                     @Override
@@ -101,6 +105,8 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        // получение данных о текущем пользователе и обновление элементов интерфейса в соответствии
+        // с полученной информацией
         LiveData<User> user = MainActivity.getInstance().getViewModel().getUser();
         user.observe(this.getViewLifecycleOwner(), new Observer<User>() {
             @Override

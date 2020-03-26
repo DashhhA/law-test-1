@@ -17,14 +17,16 @@ import com.lawtest.util.utils;
 
 import java.util.Map;
 
+// класс, содержащий информацию, необходимую для визуализации отзыва
 public class ReviewForList {
     public String fName;
     public String surName;
     public String body;
     private String avatarUri;
-    private MutableLiveData<ReviewForList> data;
-    private String key;
+    private MutableLiveData<ReviewForList> data; // LiveData, в которую "публикуются" изменения отзыва
+    private String key; // "ключ" под которым находится объект
 
+    // загрузка и сохранение аватарки
     private OnCompleteListener<byte []> avatarListener = new OnCompleteListener<byte[]>() {
         @Override
         public void onComplete(@NonNull Task<byte[]> task) {
@@ -46,6 +48,7 @@ public class ReviewForList {
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        // получение пользователя, оставившего отзыв
                         GenericTypeIndicator<Map<String, Object>> typeIndicator =
                                 new GenericTypeIndicator<Map<String, Object>>() {};
                         Map<String, Object> map = dataSnapshot.getValue(typeIndicator);

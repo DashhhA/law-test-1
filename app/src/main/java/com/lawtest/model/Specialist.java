@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+// модель специалиста
 public class Specialist extends BasePerson {
     public final static String TAG = "specialist";
     public final static String DATABASE_TAG = "specialists";

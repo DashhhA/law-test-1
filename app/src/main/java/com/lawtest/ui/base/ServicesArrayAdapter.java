@@ -16,18 +16,20 @@ import com.lawtest.model.AgencyService;
 
 import java.util.ArrayList;
 
-
+// адаптер для выпадающего списка услуг
 public class ServicesArrayAdapter extends ArrayAdapter<ServicesArrayAdapter.ListItm> {
 
     private Activity context;
     private boolean isFromView = false;
-    private TextView textView;
+    private TextView textView; // текст предлагающий выбрать услуги в спиннере
     private ArrayList<mOnCheckedChangeListener> checkedChangeListeners;
 
+    // интерфейс для отслеживания изменения выбранных услуг
     public interface mOnCheckedChangeListener {
         public void onChanged();
     }
 
+    // класс хранящий состояние сервиса (выбран/не выбран)
     public class ListItm {
         private AgencyService service;
         private boolean selected;
@@ -76,6 +78,7 @@ public class ServicesArrayAdapter extends ArrayAdapter<ServicesArrayAdapter.List
         checkedChangeListeners = new ArrayList<>();
     }
 
+    // возвращает список выбранных услуг
     public ArrayList<AgencyService> getSelected() {
         ArrayList<AgencyService> selected = new ArrayList<>();
         if (isEmpty()) return selected;
@@ -87,20 +90,25 @@ public class ServicesArrayAdapter extends ArrayAdapter<ServicesArrayAdapter.List
         return selected;
     }
 
+    // добавляет услугу
     public void add(AgencyService service) {
         super.add(new ListItm(service));
     }
 
+    // добавить интерфейс для коллбака при изменении выбора
     public void addOnCheckedChangeListener( mOnCheckedChangeListener listener ) {
         checkedChangeListeners.add(listener);
     }
 
+    // вызывается при показе строк выпадающего списка
     @Override
     public View getDropDownView(int position, View convertView,
                                 ViewGroup parent) {
         return getCustomView(position, convertView, parent);
     }
 
+    // вызывается для показа текущего выбранного элемента в spinner. Здесь используется
+    // для показа текста с предложением выбрать услуги
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         return textView;
@@ -110,6 +118,8 @@ public class ServicesArrayAdapter extends ArrayAdapter<ServicesArrayAdapter.List
     private View getCustomView(final int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
 
+        // если строка не была сохранена в convertView, создается новый ViewHolder и сохраняется
+        // в rowView. Иначе ViewHolder берется из rowView.
         View rowView = convertView;
         if (rowView == null) {
             LayoutInflater inflater = context.getLayoutInflater();
@@ -128,6 +138,7 @@ public class ServicesArrayAdapter extends ArrayAdapter<ServicesArrayAdapter.List
         isFromView = false;
         holder.textView.setText(getItem(position).getTitle());
 
+        // по нажатию на CheckButton изменяется состояние ListItm
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
@@ -142,6 +153,7 @@ public class ServicesArrayAdapter extends ArrayAdapter<ServicesArrayAdapter.List
         return rowView;
     }
 
+    // для вызова коллбаков при изменении выбранных пунктов
     private void notifyCheckedChanged() {
         if ( checkedChangeListeners == null ) return;
         for (mOnCheckedChangeListener listener: checkedChangeListeners) {
@@ -149,6 +161,7 @@ public class ServicesArrayAdapter extends ArrayAdapter<ServicesArrayAdapter.List
         }
     }
 
+    // класс, содержащий ссылки на элементы итерфейса
     private class ViewHolder {
         private TextView textView;
         private CheckBox checkBox;

@@ -13,6 +13,7 @@ import com.lawtest.model.PersonRepository;
 import com.lawtest.model.Specialist;
 import com.lawtest.model.User;
 
+// Основная ViewModel. Предоставляет доступ к "тяжелым" объектам и текущему пользователю и специалисту.
 public class MainViewModel extends ViewModel {
 
     private FirebaseAuth auth;
@@ -30,12 +31,14 @@ public class MainViewModel extends ViewModel {
         storage = FirebaseStorage.getInstance().getReference();
     }
 
+    // вызывается во время входа специалиста
     public void authSpecialist(String email, String password) {
         if (specialistRepository == null)
             specialistRepository = new PersonRepository<>(auth, database, storage, Specialist.class);
         specialist = specialistRepository.getPerson(email, password);
     }
 
+    // вызывается во время входа пользователя
     public void authUser(String email, String password) {
         if (userRepository == null)
             userRepository = new PersonRepository<>(auth, database, storage, User.class);

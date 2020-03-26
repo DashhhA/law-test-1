@@ -2,6 +2,8 @@ package com.lawtest.util;
 
 import java.util.ArrayList;
 
+// класс, вызывающий allComplete, когда завершатся все задачи, которые в него добавлены.
+// Удобен, чтобы знать, когда выполнены все параллельные процессы
 public abstract class MultiTaskCompleteWatcher{
     private ArrayList<Task> tasks;
     public MultiTaskCompleteWatcher() {

@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import com.lawtest.R;
 import com.lawtest.model.AgencyService;
 
+// ArrayAdapter для списка услуг
 public class ServicesListAdapter extends ArrayAdapter<AgencyService> {
     private Activity activity;
     ServicesListAdapter(Activity activity) {
@@ -20,6 +21,7 @@ public class ServicesListAdapter extends ArrayAdapter<AgencyService> {
         this.activity = activity;
     }
 
+    // класс, содержащий ссылки на элементы итерфейса
     private class ViewHolder {
         TextView text;
     }
@@ -29,6 +31,8 @@ public class ServicesListAdapter extends ArrayAdapter<AgencyService> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         final ViewHolder holder;
 
+        // если строка не была сохранена в convertView, создается новый ViewHolder и сохраняется
+        // в rowView. Иначе ViewHolder берется из rowView.
         View rowView = convertView;
         if (rowView == null) {
             LayoutInflater inflater = activity.getLayoutInflater();

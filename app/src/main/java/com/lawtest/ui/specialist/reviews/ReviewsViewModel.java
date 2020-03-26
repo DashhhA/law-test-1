@@ -2,6 +2,7 @@ package com.lawtest.ui.specialist.reviews;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
@@ -17,13 +18,15 @@ import com.lawtest.util.MultiTaskCompleteWatcher;
 
 import java.util.ArrayList;
 
+// ViewModel, предоставляющая доступ к данным о списке отзывов
 public class ReviewsViewModel extends ViewModel {
-    private MutableLiveData<ArrayList<ReviewForList>> data;
+    private MediatorLiveData<ArrayList<ReviewForList>> data;
 
     public ReviewsViewModel() {
-        data = new MutableLiveData<>();
+        data = new MediatorLiveData<>();
 
-        MainActivity.getInstance().getViewModel().getSpecialist().observeForever(
+        // получение специалиста
+        data.addSource(MainActivity.getInstance().getViewModel().getSpecialist(),
                 new Observer<Specialist>() {
             @Override
             public void onChanged(Specialist specialist) {
@@ -32,6 +35,7 @@ public class ReviewsViewModel extends ViewModel {
                 MultiTaskCompleteWatcher reviewsWatcher = new MultiTaskCompleteWatcher() {
                     @Override
                     public void allComplete() {
+                        // "публикация" списка отзывов
                         data.postValue(reviews);
                     }
 
@@ -40,6 +44,7 @@ public class ReviewsViewModel extends ViewModel {
                         //todo
                     }
                 };
+                // формирование списка отзывов специалиста
                 for ( final String reviewId: specialist.reviews ) {
                     final MultiTaskCompleteWatcher.Task task = reviewsWatcher.newTask();
                     MainActivity.getInstance().getViewModel().getDatabase()

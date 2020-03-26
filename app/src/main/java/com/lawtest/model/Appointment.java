@@ -4,6 +4,7 @@ import com.google.firebase.database.Exclude;
 
 import java.util.ArrayList;
 
+// модель данных для встречи
 public class Appointment {
     @Exclude
     public static final String DATABASE_REF = "appointments";

@@ -10,15 +10,18 @@ import com.lawtest.R;
 
 import static android.content.DialogInterface.BUTTON_POSITIVE;
 
+// класс, создающий диалог для изменения ФИО
 public class EditNameDialog{
     private OnValuesSetListener listener;
 
+    // интерфейс для получения значений после того, как они были заданы
     public interface OnValuesSetListener{
         void onValuesSet(String fName, String sName, String surName);
     }
 
     public EditNameDialog(final Context context) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        // получение view и ссылок на элементы интерфейса
         View root = LayoutInflater.from(context).inflate(R.layout.dialog_edit_name,null);
         final EditText fName = root.findViewById(R.id.persDialogfName);
         final EditText sName = root.findViewById(R.id.persDialogsName);
@@ -43,6 +46,7 @@ public class EditNameDialog{
                         dialog.dismiss();
                     }
                 } else {
+                    // показывается если соответствующие поля не заполнены
                     AlertDialog.Builder builderInner = new AlertDialog.Builder(context);
                     builderInner.setMessage(R.string.edit_name_warning);
                     builderInner.setPositiveButton("Ok", null);

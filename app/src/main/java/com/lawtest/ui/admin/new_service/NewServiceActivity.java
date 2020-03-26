@@ -24,6 +24,7 @@ import com.lawtest.model.AgencyService;
 
 import java.util.UUID;
 
+// активити для добавления новой услуги
 public class NewServiceActivity extends AppCompatActivity {
 
     @Override
@@ -38,22 +39,26 @@ public class NewServiceActivity extends AppCompatActivity {
         ab.setDisplayShowTitleEnabled(false);
         ab.setDisplayHomeAsUpEnabled(true);
 
+        // получение ссылок на элементы интерфейса
         final EditText name = findViewById(R.id.newServiceName);
         final EditText desc = findViewById(R.id.newServiceDescription);
         Button submit = findViewById(R.id.newServiceSubmit);
 
+        // регистрация услуги по нажатию на кнопку
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final ProgressDialog progress = new ProgressDialog(NewServiceActivity.this);
-                progress.setMessage(getString(R.string.login_checking));
+                progress.setMessage(getString(R.string.new_service_creating));
                 progress.show();
 
+                // заполнение модели услуги
                 AgencyService service = new AgencyService();
                 service.id = UUID.randomUUID().toString();
                 service.name = name.getText().toString();
                 service.description = desc.getText().toString();
 
+                // загрузка услуги в серверную бд
                 DatabaseReference database = MainActivity.getInstance().getViewModel().getDatabase();
                 database.child(AgencyService.DATABASE_ENTRY)
                         .child(service.id)

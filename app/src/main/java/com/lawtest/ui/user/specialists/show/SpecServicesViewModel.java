@@ -19,6 +19,7 @@ import com.lawtest.util.MultiTaskCompleteWatcher;
 
 import java.util.ArrayList;
 
+// ViewModel, предоставляющая доступ к услугам и отзывам специалиста
 public class SpecServicesViewModel extends ViewModel {
     private ArrayList<AgencyService> services;
     private MutableLiveData<ArrayList<AgencyService>> servicesData;

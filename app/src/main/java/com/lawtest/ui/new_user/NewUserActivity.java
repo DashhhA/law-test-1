@@ -28,6 +28,7 @@ import com.lawtest.ui.login.LogInActivity;
 import com.lawtest.ui.user.UserActivity;
 import com.lawtest.util.crypto;
 
+// активити создания нового пользователя
 public class NewUserActivity extends AppCompatActivity {
 
     public static final int PICK_IMAGE = 1;
@@ -126,6 +127,7 @@ public class NewUserActivity extends AppCompatActivity {
                         viewModel.isRemember()
                 );
 
+                // уведомление о загрузке и коллбак на создание аккаунта
                 final ProgressDialog progress = new ProgressDialog(NewUserActivity.this);
                 progress.setMessage(getString(R.string.new_user_creating));
                 progress.show();
@@ -148,6 +150,8 @@ public class NewUserActivity extends AppCompatActivity {
 
                             @Override
                             public void onComplete() {
+                                // запуск соответствующего активити и авторизация
+                                // в основном ViewModel
                                 progress.dismiss();
                                 MainActivity.getInstance().getViewModel()
                                         .authUser(viewModel.getEmail(), password.getText().toString());
@@ -157,6 +161,7 @@ public class NewUserActivity extends AppCompatActivity {
 
                             @Override
                             public void onFailure(Exception exception) {
+                                // сообщение об ошибке
                                 progress.dismiss();
                                 AlertDialog.Builder builder = new AlertDialog.Builder(NewUserActivity.this);
                                 builder.setTitle("Error");

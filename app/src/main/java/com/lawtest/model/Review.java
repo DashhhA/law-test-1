@@ -2,6 +2,7 @@ package com.lawtest.model;
 
 import com.google.firebase.database.Exclude;
 
+// модель отзыва
 public class Review {
     public String userId;
     public String specialistId;

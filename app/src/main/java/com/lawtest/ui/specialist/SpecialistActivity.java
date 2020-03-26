@@ -23,6 +23,7 @@ import com.lawtest.R;
 import com.lawtest.model.Specialist;
 import com.lawtest.ui.login.LogInActivity;
 
+// основное активити специалиста, управляющее показываемыми фрагментами
 public class SpecialistActivity extends AppCompatActivity {
     private AppBarConfiguration appBarConfiguration;
     private SpecialistViewModel viewModel;

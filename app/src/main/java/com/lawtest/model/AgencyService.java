@@ -4,6 +4,7 @@ import com.google.firebase.database.Exclude;
 
 import java.util.Map;
 
+// модель данных для услуги
 public class AgencyService {
     public String id;
     public String name;

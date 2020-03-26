@@ -20,11 +20,12 @@ import com.lawtest.ui.base.task;
 
 import java.util.ArrayList;
 
+// фрагмент, содержащий список специалистов
 public class SpecialistsListFragment extends ListFragment {
 
     private SpecialistsListViewModel viewModel;
     private AdminActivity activity;
-    private TasksOnActivity tasks = new TasksOnActivity();
+    private TasksOnActivity tasks = new TasksOnActivity(); // задачи, которые будут выполнены в onCreateView
 
     @Nullable
     @Override
@@ -33,7 +34,7 @@ public class SpecialistsListFragment extends ListFragment {
 
         viewModel = ViewModelProviders.of(this).get(SpecialistsListViewModel.class);
         activity = (AdminActivity) requireActivity();
-        tasks.applyTasks();
+        tasks.applyTasks(); // исполнение отложенных задач
         View root = inflater.inflate(R.layout.fragment_admin_specialists, container, false);
 
         return root;
@@ -43,7 +44,11 @@ public class SpecialistsListFragment extends ListFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        // установка ListAdapter
         final SpecialistsListAdapter adapter = new SpecialistsListAdapter(this.getActivity());
+        setListAdapter(adapter);
+
+        // получение данных об изменениях списка специалистов и обновление ListView
         viewModel.getSpecialists().observe(getViewLifecycleOwner(),
                 new Observer<ArrayList<SpecialistForList>>() {
             @Override
@@ -51,14 +56,15 @@ public class SpecialistsListFragment extends ListFragment {
                 adapter.updateSpecialists(specialist);
             }
         });
-        setListAdapter(adapter);
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
+            // выполняется когда пользователь видит фрагмент
             if (activity == null) {
+                // если фрагмент еще не привязан к активити
                 tasks.addTask(new task() {
                     @Override
                     public void apply() {

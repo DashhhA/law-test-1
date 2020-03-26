@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.lawtest.model.SpecialistForList;
 
+// ViewModelFactory для передачи аргументов в SpecServicesViewModel
 public class SpecServiceViewModelFactory implements ViewModelProvider.Factory {
     private SpecialistForList specialist;
 

@@ -4,6 +4,7 @@ import android.net.Uri;
 
 import androidx.lifecycle.ViewModel;
 
+// VIewModel, содержит и предоставляет доступ к вееденным пользователем данным
 public class NewUserViewModel extends ViewModel {
     private String fName;
     private String sName;

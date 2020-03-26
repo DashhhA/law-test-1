@@ -12,6 +12,7 @@ import com.lawtest.ui.admin.posts.PostsFragment;
 import com.lawtest.ui.admin.services.ServicesListFragment;
 import com.lawtest.ui.admin.specialists.SpecialistsListFragment;
 
+// класс, используемый ViewPager для получения фрагментов и их тэгов
 public class MFragmentPagerAdapter extends FragmentPagerAdapter {
     private Fragment[] fragments = new Fragment[3];
     private String[] titles;

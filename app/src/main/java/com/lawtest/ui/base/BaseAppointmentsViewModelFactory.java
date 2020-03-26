@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.lawtest.model.BasePerson;
 import com.lawtest.model.User;
 
+// ViewModelFactory, нужна для того, чтобы можно было передать параметры во ViewModel
 public class BaseAppointmentsViewModelFactory implements ViewModelProvider.Factory {
     private LiveData<BasePerson> person;
     private Class tClass;

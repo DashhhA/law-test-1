@@ -5,6 +5,8 @@ import android.net.Uri;
 import java.util.ArrayList;
 import java.util.Map;
 
+// базова модель данных, от которой наследуются User и Specialist.
+// Нужна, чтобы один и тот же класс мог работать и с User и с Specialist
 public abstract class BasePerson {
     public String avatarUri;
     public String email;

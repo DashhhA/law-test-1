@@ -9,11 +9,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.lawtest.MainActivity;
 import com.lawtest.model.AgencyService;
 import com.lawtest.ui.base.BaseSpecialistsListViewModel;
 
 import java.util.ArrayList;
 
+// ViewModel, предоставляющая доступ к списку услуг и специалистов
 public class NewAppointmentViewModel extends BaseSpecialistsListViewModel {
     private MutableLiveData<ArrayList<AgencyService>> services;
 
@@ -35,8 +37,9 @@ public class NewAppointmentViewModel extends BaseSpecialistsListViewModel {
     };
 
     public NewAppointmentViewModel() {
+        super();
         services = new MutableLiveData<>();
-        FirebaseDatabase.getInstance().getReference()
+        MainActivity.getInstance().getViewModel().getDatabase()
                 .child(AgencyService.DATABASE_ENTRY)
                 .addValueEventListener(servicesEventListener);
     }

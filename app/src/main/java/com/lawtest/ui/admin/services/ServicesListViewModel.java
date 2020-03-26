@@ -15,15 +15,16 @@ import com.lawtest.model.AgencyService;
 
 import java.util.ArrayList;
 
+// ViewModel, предоставляющее данные по имеющимся сервисам
 public class ServicesListViewModel extends ViewModel {
     private ArrayList<AgencyService> services;
     private MutableLiveData<ArrayList<AgencyService>> data;
-    private AgencyService current;
 
     public ServicesListViewModel() {
         services = new ArrayList<>();
         data = new MutableLiveData<>();
 
+        // отслеживание изменений в списке услуг в серверной бд
         DatabaseReference database = MainActivity.getInstance().getViewModel().getDatabase();
         database.child(AgencyService.DATABASE_ENTRY)
                 .addChildEventListener(new ChildEventListener() {
@@ -64,6 +65,7 @@ public class ServicesListViewModel extends ViewModel {
         return data;
     }
 
+    // удалает из списка по "ключу"
     private void removeServiceByKey(String key) {
         ArrayList<AgencyService> toRemove = new ArrayList<>();
         for (AgencyService service: services) {

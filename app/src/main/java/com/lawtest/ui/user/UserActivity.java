@@ -24,6 +24,7 @@ import com.lawtest.MainActivity;
 import com.lawtest.R;
 import com.lawtest.model.User;
 
+// основное активити пользователя, управляющее показываемыми фрагментами
 public class UserActivity extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;

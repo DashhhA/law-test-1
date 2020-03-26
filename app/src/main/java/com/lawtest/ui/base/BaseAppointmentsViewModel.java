@@ -28,21 +28,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+// ViewModel, предоставляюща доступ к данным по встречам
 public class BaseAppointmentsViewModel extends ViewModel {
     private ArrayList<Appointment> appointments;
     private MediatorLiveData<ArrayList<Appointment>> data;
-    private Map<Appointment, LiveData<AppointmentData>> map;
+    private Map<Appointment, LiveData<AppointmentData>> map; // для получени данных для визуализации по модели
     private Appointment current;
     private Class tClass;
-    LiveData<BasePerson> person;
 
+    // в конструктор передаются person и его класс (User или Specialist), так как для юзера нужно
+    // показать имена и аватарки специалистов, а для специалиста наоборот
     public BaseAppointmentsViewModel(LiveData<BasePerson> person, Class tClass) {
         appointments = new ArrayList<>();
         data = new MediatorLiveData<>();
         map = new HashMap<>();
         this.tClass = tClass;
-        this.person = person;
 
+        // получение списка встреч с сервера
         data.addSource(person, new Observer<BasePerson>() {
             @Override
             public void onChanged(BasePerson person) {
@@ -82,6 +84,7 @@ public class BaseAppointmentsViewModel extends ViewModel {
         });
     }
 
+    // получение модели для визуализации по встрече
     public LiveData<AppointmentData> getByAppointment(Appointment appointment) {
         LiveData<AppointmentData> appointmentData = map.get(appointment);
         if (appointmentData == null) {
@@ -94,6 +97,7 @@ public class BaseAppointmentsViewModel extends ViewModel {
                 @Override
                 public void allComplete() {
                     postData.services = builder.substring(0,builder.length()-2);
+                    // "публикация" переменной, когда данные получены
                     newData.postValue(postData);
                 }
 
@@ -107,6 +111,7 @@ public class BaseAppointmentsViewModel extends ViewModel {
             final MultiTaskCompleteWatcher.Task nameTask = watcher.newTask();
             final MultiTaskCompleteWatcher.Task avaTask = watcher.newTask();
 
+            // получение статуса встречи
             MainActivity.getInstance().getViewModel().getDatabase()
                     .child(Appointment.DATABASE_REF)
                     .child(appointment.id)
@@ -124,45 +129,7 @@ public class BaseAppointmentsViewModel extends ViewModel {
                         }
                     });
 
-            /*MainActivity.getInstance().getViewModel().getDatabase()
-                    .child(User.DATABASE_TAG)
-                    .child(appointment.userId)
-                    .addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            GenericTypeIndicator<Map<String, Object>> typeIndicator =
-                                    new GenericTypeIndicator<Map<String, Object> >() {};
-                            Map<String, Object> map = dataSnapshot.getValue(typeIndicator);
-                            final User user = new User(map);
-                            postData.name = user.fName + " " + user.surName;
-                            nameTask.complete();
-                            if (user.getAvatarUri() != null) {
-                                MainActivity.getInstance().getViewModel().getStorage()
-                                        .child(User.DATABASE_AVA_FOLDER)
-                                        .child(user.getAvatarUri().getLastPathSegment())
-                                        .getBytes(utils.MAX_DOWNLOAD_BYTES)
-                                        .addOnCompleteListener(new OnCompleteListener<byte[]>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<byte[]> task) {
-                                                if (task.isSuccessful()) {
-                                                    utils.saveBytesToFile(user.getAvatarUri(), task.getResult());
-                                                    postData.ava = user.getAvatarUri();
-                                                    avaTask.complete();
-                                                }
-                                            }
-                                        });
-                            } else {
-                                postData.ava = null;
-                                avaTask.complete();
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            //todo
-                        }
-                    });*/
-
+            // получение имени и аватарки пользователя или специаласта
             MainActivity.getInstance().getViewModel().getDatabase()
                     .child(getDatabaseTag(tClass))
                     .child(getPersonId(tClass, appointment))
@@ -212,7 +179,7 @@ public class BaseAppointmentsViewModel extends ViewModel {
                         }
                     });
 
-
+            // получение названий услуг
             for (String serviceId: appointment.ServiceIds) {
                 final MultiTaskCompleteWatcher.Task task = watcher.newTask();
                 MainActivity.getInstance().getViewModel().getDatabase()
@@ -253,6 +220,7 @@ public class BaseAppointmentsViewModel extends ViewModel {
         return data;
     }
 
+    // класс, содержащий информацию о встрече, которая будет показана
     public class AppointmentData {
         public Uri ava;
         public String name;

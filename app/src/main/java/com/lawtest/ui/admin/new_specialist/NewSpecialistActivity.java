@@ -37,6 +37,7 @@ import java.util.ArrayList;
 
 import static com.lawtest.model.PersonRepository.EMAIL_TO_SALT_TAG;
 
+// активити для добавления нового специалиста
 public class NewSpecialistActivity extends AppCompatActivity {
 
     private NewSpecialistViewModel viewModel;
@@ -95,9 +96,11 @@ public class NewSpecialistActivity extends AppCompatActivity {
         s = viewModel.getEmail();
         if (s != null) email.setText(s);
 
+        // получение ArrayAdapter для spinner для выбора услуг
         final ServicesArrayAdapter arrayAdapter = new ServicesArrayAdapter(this, 0);
         spinner.setAdapter(arrayAdapter);
         spinner.setEnabled(!arrayAdapter.isEmpty());
+        // получение списка услуг и обновление ArrayAdapter
         viewModel.getService().observe(this, new Observer<ArrayList<AgencyService>>() {
             @Override
             public void onChanged(ArrayList<AgencyService> agencyServices) {
@@ -112,6 +115,7 @@ public class NewSpecialistActivity extends AppCompatActivity {
 
         new ContentModel(fName, surName, email, password, submit);
 
+        // регистрация и загрузка специалиста на сервер
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -157,6 +161,7 @@ public class NewSpecialistActivity extends AppCompatActivity {
                 final MultiTaskCompleteWatcher.Task saltTask = taskCompleteWatcher.newTask();
                 final MultiTaskCompleteWatcher.Task authTask = taskCompleteWatcher.newTask();
 
+                // регистрация в auth
                 OnCompleteListener<AuthResult> authListener = new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -179,6 +184,7 @@ public class NewSpecialistActivity extends AppCompatActivity {
                     }
                 };
 
+                // добавление соли в таблицу соответствия соли и почты (для аутентификации)
                 database.child(EMAIL_TO_SALT_TAG)
                         .child(utils.emailForDatabase(viewModel.getEmail()))
                         .setValue(utils.bytesToArray(specialist.salt))
@@ -190,6 +196,7 @@ public class NewSpecialistActivity extends AppCompatActivity {
                             }
                         });
 
+                // регистрация в auth
                 FirebaseAuth auth = viewModel.getAuth();
                 auth.createUserWithEmailAndPassword(specialist.email, new String(specialist.pass))
                 .addOnCompleteListener(authListener);

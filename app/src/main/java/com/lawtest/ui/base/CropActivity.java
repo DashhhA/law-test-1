@@ -18,6 +18,8 @@ import com.lawtest.util.utils;
 
 import java.util.UUID;
 
+// активити, позволяющее обрезать изображение и сохранить его "круглую" версию
+// разрешением 256 на 256
 public class CropActivity extends AppCompatActivity {
 
     private SpinnerProgress progress;

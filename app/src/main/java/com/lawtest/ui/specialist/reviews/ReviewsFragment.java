@@ -17,6 +17,7 @@ import com.lawtest.ui.base.BaseReviewListAdapter;
 
 import java.util.ArrayList;
 
+// фрагмент со списком отзывов
 public class ReviewsFragment extends ListFragment {
     private ReviewsViewModel viewModel;
 
@@ -35,9 +36,11 @@ public class ReviewsFragment extends ListFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // инициализация ListAdapter и передача его в ListView
         final BaseReviewListAdapter reviewsAdapter = new BaseReviewListAdapter(requireActivity());
         setListAdapter(reviewsAdapter);
 
+        // "подписка" на изменения в списке отзывов и обновление ListAdapter в соответствии с ним
         viewModel.getReviews().observe(requireActivity(), new Observer<ArrayList<ReviewForList>>() {
             @Override
             public void onChanged(ArrayList<ReviewForList> review) {
